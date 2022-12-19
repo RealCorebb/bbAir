@@ -1,25 +1,34 @@
-#define OUT1 12
-#define OUT2 3
-#define OUT3 13
-#define OUT4 14
+#define pumpTime 40
+
+#define OUT1 4
+#define OUT2 5
 
 void setup() {
   // put your setup code here, to run once:
   pinMode(OUT1,OUTPUT);
-  pinMode(OUT3,OUTPUT);
+  pinMode(OUT2,OUTPUT);
+  Serial.begin(115200);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  digitalWrite(OUT3,HIGH);
-  delay(100);
+  Serial.println("OUT1 HIGH");
+  digitalWrite(OUT1,HIGH);
+  delay(pumpTime);
+  Serial.println("OUT1 LOW");
+  digitalWrite(OUT1,LOW);  
 
   for(int i = 0;i<3;i++){
-    digitalWrite(OUT1,HIGH);
+    digitalWrite(OUT2,HIGH);
     delay(20);
-    digitalWrite(OUT1,LOW);
-    delay(200);
+    digitalWrite(OUT2,LOW);
+digitalWrite(OUT1,HIGH);    
+    delay(pumpTime);
+digitalWrite(OUT1,LOW);  
+delay(200);    
   }
-  digitalWrite(OUT3,LOW);
-  delay(1000);
+  
+  
+  delay(2000);
+  
 }
