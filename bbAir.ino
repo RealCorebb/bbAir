@@ -1,3 +1,26 @@
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+class MyCallbacks: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+      std::string value = pCharacteristic->getValue();
+
+      if (value.length() > 0) {
+        Serial.println("*********");
+        Serial.print("New value: ");
+        for (int i = 0; i < value.length(); i++)
+          Serial.print(value[i]);
+
+        Serial.println();
+        Serial.println("*********");
+      }
+    }
+};
+
+
 #define pumpTime 40
 
 #define OUT1 4
@@ -8,6 +31,26 @@ void setup() {
   pinMode(OUT1,OUTPUT);
   pinMode(OUT2,OUTPUT);
   Serial.begin(115200);
+
+  //BLE -_,-
+  BLEDevice::init("bbAir");
+  BLEServer *pServer = BLEDevice::createServer();
+
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+                                         CHARACTERISTIC_UUID,
+                                         BLECharacteristic::PROPERTY_READ |
+                                         BLECharacteristic::PROPERTY_WRITE
+                                       );
+
+  pCharacteristic->setCallbacks(new MyCallbacks());
+
+  pService->start();
+
+  BLEAdvertising *pAdvertising = pServer->getAdvertising();
+  pAdvertising->start();
+  //BLE
 }
 
 void loop() {
