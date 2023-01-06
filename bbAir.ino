@@ -4,7 +4,11 @@
 #include <Preferences.h>
 #include <WiFi.h>
 
+#include "font.h"
+
 Preferences preferences;
+
+
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -17,23 +21,31 @@ Preferences preferences;
 void loop() {
   // put your main code here, to run repeatedly:
   //Serial.println("OUT1 HIGH");
-  digitalWrite(OUT1,HIGH);
-  delay(pumpTime);
-  //Serial.println("OUT1 LOW");
-  digitalWrite(OUT1,LOW);  
 
-  for(int i = 0;i<3;i++){
-    digitalWrite(OUT2,HIGH);
-    delay(20);
-    digitalWrite(OUT2,LOW);
-digitalWrite(OUT1,HIGH);    
+  // PUMP TEST  -_,-//
+    /*
+    digitalWrite(OUT1,HIGH);
     delay(pumpTime);
-digitalWrite(OUT1,LOW);  
-delay(200);    
-  }
-  
-  
-  delay(2000);
+    //Serial.println("OUT1 LOW");
+    digitalWrite(OUT1,LOW);  
+
+    for(int i = 0;i<3;i++){
+      digitalWrite(OUT2,HIGH);
+      delay(20);
+      digitalWrite(OUT2,LOW);
+  digitalWrite(OUT1,HIGH);    
+      delay(pumpTime);
+  digitalWrite(OUT1,LOW);  
+  delay(200);    
+    }
+    
+    
+    delay(2000);*/
+  // PUMP TEST//
+
+  //Font Test -_,-//
+  Serial.println(testFontBlocks[0].startingNum);
+  //Font Test//
   
 }
 
