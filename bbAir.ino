@@ -3,8 +3,10 @@
 #include <BLEServer.h>
 #include <Preferences.h>
 #include <WiFi.h>
-
-#include "font.h"
+#include <Adafruit_GFX.h>
+#include <U8g2_for_Adafruit_GFX.h>
+U8G2_FOR_ADAFRUIT_GFX gfx;
+#include "pixelcorebb.h"
 
 Preferences preferences;
 
@@ -42,10 +44,6 @@ void loop() {
     
     delay(2000);*/
   // PUMP TEST//
-
-  //Font Test -_,-//
-  Serial.println(testFontBlocks[0].startingNum);
-  //Font Test//
   
 }
 
@@ -130,4 +128,40 @@ void setup() {
   //WiFi -_,-
   setupWifi();
   //WiFi
+}
+
+
+/////////////////////////////////
+
+void pumpText(String text){
+  int fontWidth = 8; // width of each character in the font
+  int fontHeight = 16; // height of each character in the font
+
+  int bitmapWidth = text.length() * fontWidth;
+  int bitmapHeight = fontHeight;
+  GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
+  gfx.begin(canvas);
+  byte* bitmap = new byte[bitmapWidth * bitmapHeight]; // create bitmap array
+
+  // Clear bitmap
+  memset(bitmap, 0, bitmapWidth * bitmapHeight);
+
+  // Draw text on bitmap
+  gfx.setFont(pixelcorebb);
+  gfx.setCursor(0, fontHeight);
+  gfx.println(text);
+
+  // Convert bitmap to 0/1 array
+  for (int y = 0; y < bitmapHeight; y++) {
+    for (int x = 0; x < bitmapWidth; x++) {
+      int pixel = canvas.getPixel(x, y);
+      if (pixel == 1) {
+        bitmap[y * bitmapWidth + x] = 1;
+      }
+    }
+  }
+
+  // Do something with the bitmap, e.g. send it to a server or save it to a file
+
+  delete[] bitmap; // free bitmap memory
 }
