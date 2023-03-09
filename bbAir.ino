@@ -44,6 +44,12 @@ void loop() {
     
     delay(2000);*/
   // PUMP TEST//
+  if (Serial.available()) {
+    String command = Serial.readString();
+    if (command == "reset") {
+      ESP.restart();
+    }
+  }
   
 }
 
@@ -103,7 +109,7 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(OUT1,OUTPUT);
   pinMode(OUT2,OUTPUT);
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   //BLE -_,-
   BLEDevice::init("bbAir");
@@ -128,6 +134,8 @@ void setup() {
   //WiFi -_,-
   setupWifi();
   //WiFi
+
+  pumpText("你好");
 }
 
 
@@ -135,10 +143,16 @@ void setup() {
 
 void pumpText(String text){
   int fontWidth = 8; // width of each character in the font
-  int fontHeight = 16; // height of each character in the font
+  int fontHeight = 8; // height of each character in the font
 
   int bitmapWidth = text.length() * fontWidth;
   int bitmapHeight = fontHeight;
+  Serial.print("Length:");
+  Serial.println(text.length());
+  Serial.print("Width:");
+  Serial.println(bitmapWidth);
+  Serial.print("Height:");
+  Serial.println(bitmapHeight);  
   GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
   gfx.begin(canvas);
   byte* bitmap = new byte[bitmapWidth * bitmapHeight]; // create bitmap array
@@ -148,7 +162,7 @@ void pumpText(String text){
 
   // Draw text on bitmap
   gfx.setFont(pixelcorebb);
-  gfx.setCursor(0, fontHeight);
+  gfx.setCursor(0, fontHeight-1);
   gfx.println(text);
 
   // Convert bitmap to 0/1 array
@@ -157,8 +171,11 @@ void pumpText(String text){
       int pixel = canvas.getPixel(x, y);
       if (pixel == 1) {
         bitmap[y * bitmapWidth + x] = 1;
+        Serial.print("⬜");
       }
+      else Serial.print("⬛");
     }
+    Serial.println("");
   }
 
   // Do something with the bitmap, e.g. send it to a server or save it to a file
