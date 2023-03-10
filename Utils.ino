@@ -1,4 +1,5 @@
 #include <ArduinoJson.h>
+#include <Adafruit_NeoPixel.h>
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
 DynamicJsonDocument doc(1024);
@@ -55,7 +56,7 @@ void initConfig() {
     }
 }
 
-void pumpShape(JsonArray shapeData){
+void pumpShape(const JsonArray& shapeData){
   //loop shapeData
     for (int i = 0; i < shapeData.size(); i++) {
       int shapeDecimal = shapeData[i];
@@ -74,4 +75,25 @@ void pumpShape(JsonArray shapeData){
       }
       delay(bubbleTime);
     }
+}
+
+// LED   -_,-
+#define PIN       41
+#define NUMPIXELS 19
+int brightness = 50;
+int ledSpeed = 10;
+Adafruit_NeoPixel strip(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setupLED(){
+  strip.begin();
+  strip.show();
+  strip.setBrightness(brightness);
+}
+
+void ledLoop(){
+  for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+    strip.rainbow(firstPixelHue);
+    strip.show(); // Update strip with new contents
+    delay(ledSpeed);  // Pause for a moment
+  }
 }
