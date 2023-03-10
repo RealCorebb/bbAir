@@ -11,6 +11,8 @@
 #include <AsyncTCP.h>
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
+#include <LittleFS.h>
+U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
@@ -44,6 +46,8 @@ TaskHandle_t SecondCoreTask;
 #define OUT20 38
 #define OUT21 39
 
+int bubbleTime = 200;
+
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
 
 void SecondCoreTaskFunction(void *pvParameters) {
@@ -62,6 +66,8 @@ void loop() {
     }
   }
   ArduinoOTA.handle();
+  pumpAll(20);
+  delay(980);
 }
 
 
@@ -178,7 +184,8 @@ void setup() {
       else if (error == OTA_END_ERROR) Serial.println("End Failed");
     });
 
-  ArduinoOTA.begin();  
+  ArduinoOTA.begin();
+  initConfig();
   //OTA
 
   xTaskCreatePinnedToCore(
