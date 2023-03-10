@@ -1,3 +1,6 @@
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
@@ -8,11 +11,11 @@
 #include <AsyncTCP.h>
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
-U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
+U8G2_FOR_ADAFRUIT_GFX gfx;
 Preferences preferences;
-
+TaskHandle_t SecondCoreTask;
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -43,31 +46,15 @@ Preferences preferences;
 
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
 
+void SecondCoreTaskFunction(void *pvParameters) {
+  while (true) {
+    pumpAll(40);
+    delay(960);
+  }
+}
+
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //Serial.println("OUT1 HIGH");
-
-  // PUMP TEST  -_,-//
-    /*
-    digitalWrite(OUT1,HIGH);
-    delay(pumpTime);
-    //Serial.println("OUT1 LOW");
-    digitalWrite(OUT1,LOW);  
-
-    for(int i = 0;i<3;i++){
-      digitalWrite(OUT2,HIGH);
-      delay(20);
-      digitalWrite(OUT2,LOW);
-  digitalWrite(OUT1,HIGH);    
-      delay(pumpTime);
-  digitalWrite(OUT1,LOW);  
-  delay(200);    
-    }
-    
-    
-    delay(2000);*/
-  // PUMP TEST//
   if (Serial.available()) {
     String command = Serial.readString();
     if (command == "reset") {
@@ -75,10 +62,8 @@ void loop() {
     }
   }
   ArduinoOTA.handle();
-  pumpAll(20);
-  delay(980);
-  
 }
+
 
 void setupWifi(){
   String ssid = preferences.getString("ssid","Hollyshit_A");
@@ -195,6 +180,17 @@ void setup() {
 
   ArduinoOTA.begin();  
   //OTA
+
+  xTaskCreatePinnedToCore(
+    SecondCoreTaskFunction, // Task function
+    "SecondCoreTask",      // Task name
+    10000,                 // Stack size (words)
+    NULL,                  // Task parameters
+    1,                     // Task priority
+    &SecondCoreTask,       // Task handle
+    0                      // Core to run the task on (1 = second core)
+  );
+
 }
 
 
@@ -247,7 +243,9 @@ void pumpAll(int time){
   delay(pumpTime);  
   for(int i = 0;i<maxPumps;i++){
     digitalWrite(valvePins[i],HIGH);
-    delay(time);
+  }
+  delay(time);
+  for(int i = 0;i<maxPumps;i++){
     digitalWrite(valvePins[i],LOW);
   }
   digitalWrite(OUT21,LOW);
