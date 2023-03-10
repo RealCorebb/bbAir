@@ -1,6 +1,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
-
+#include <ArduinoJson.h>
+#include <Adafruit_NeoPixel.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
@@ -15,7 +16,6 @@
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
-U8G2_FOR_ADAFRUIT_GFX gfx;
 Preferences preferences;
 TaskHandle_t SecondCoreTask;
 
@@ -247,7 +247,9 @@ void pumpText(String text){
 
 void pumpAll(int time){
   digitalWrite(OUT21,HIGH);
-  delay(pumpTime);  
+  delay(pumpTime);
+  digitalWrite(OUT21,LOW);
+  delay(500);
   for(int i = 0;i<maxPumps;i++){
     digitalWrite(valvePins[i],HIGH);
   }
@@ -255,5 +257,4 @@ void pumpAll(int time){
   for(int i = 0;i<maxPumps;i++){
     digitalWrite(valvePins[i],LOW);
   }
-  digitalWrite(OUT21,LOW);
 }

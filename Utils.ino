@@ -1,5 +1,3 @@
-#include <ArduinoJson.h>
-#include <Adafruit_NeoPixel.h>
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
 DynamicJsonDocument doc(1024);
