@@ -1,0 +1,14 @@
+{
+  "pump":true,
+  "led":true,
+  "schedule":[
+    {
+      "type":"text",
+      "data":"Hello"
+    },
+    {
+      "type":"shape",
+      "data":[559240,279620]    
+    }
+  ]
+}

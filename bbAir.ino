@@ -8,6 +8,7 @@
 #include <AsyncTCP.h>
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
+#include <LittleFS.h>
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
@@ -41,33 +42,12 @@ Preferences preferences;
 #define OUT20 38
 #define OUT21 39
 
+int bubbleTime = 200;
+
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //Serial.println("OUT1 HIGH");
-
-  // PUMP TEST  -_,-//
-    /*
-    digitalWrite(OUT1,HIGH);
-    delay(pumpTime);
-    //Serial.println("OUT1 LOW");
-    digitalWrite(OUT1,LOW);  
-
-    for(int i = 0;i<3;i++){
-      digitalWrite(OUT2,HIGH);
-      delay(20);
-      digitalWrite(OUT2,LOW);
-  digitalWrite(OUT1,HIGH);    
-      delay(pumpTime);
-  digitalWrite(OUT1,LOW);  
-  delay(200);    
-    }
-    
-    
-    delay(2000);*/
-  // PUMP TEST//
   if (Serial.available()) {
     String command = Serial.readString();
     if (command == "reset") {
@@ -77,7 +57,6 @@ void loop() {
   ArduinoOTA.handle();
   pumpAll(20);
   delay(980);
-  
 }
 
 void setupWifi(){
@@ -193,7 +172,8 @@ void setup() {
       else if (error == OTA_END_ERROR) Serial.println("End Failed");
     });
 
-  ArduinoOTA.begin();  
+  ArduinoOTA.begin();
+  initConfig();
   //OTA
 }
 
