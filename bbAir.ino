@@ -13,6 +13,7 @@
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
 #include <LittleFS.h>
+#include "Ticker.h"
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
@@ -43,20 +44,14 @@ TaskHandle_t SecondCoreTask;
 #define OUT17 35
 #define OUT18 36
 #define OUT19 37
-#define OUT20 38
-#define OUT21 39
 
-int bubbleTime = 200;
+#define OUT20 38   //Not Use
+#define OUTAir 39   //Air Pump
 
+int bubbleTime = 40;
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-
-void SecondCoreTaskFunction(void *pvParameters) {
-  while (true) {
-    pumpAll(40);
-    delay(960);
-  }
-}
-
+uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+Ticker valveTickers[20];
 
 void loop() {
   if (Serial.available()) {
@@ -66,8 +61,6 @@ void loop() {
     }
   }
   ArduinoOTA.handle();
-  pumpAll(20);
-  delay(980);
 }
 
 
@@ -129,7 +122,7 @@ void setup() {
   for (int i = 0; i < 20; i++) {
     pinMode(valvePins[i], OUTPUT);
   }
-  pinMode(OUT21,OUTPUT);
+  pinMode(OUTAir,OUTPUT);
   Serial.begin(115200);
 
   //BLE -_,-
@@ -245,16 +238,28 @@ void pumpText(String text){
   delete[] bitmap; // free bitmap memory
 }
 
-void pumpAll(int time){
-  digitalWrite(OUT21,HIGH);
+void onPump(int no,int time = bubbleTime){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
+  digitalWrite(valvePins[no],HIGH);
+  valveTickers[no].once_ms(time + valveOffsets[no], offPump, no);
+}
+
+void offPump(int no){
+  digitalWrite(valvePins[no],LOW);
+}
+
+void pumpAll(int time = bubbleTime){
+  digitalWrite(OUTAir,HIGH);
   delay(pumpTime);
-  digitalWrite(OUT21,LOW);
+  digitalWrite(OUTAir,LOW);
   delay(500);
   for(int i = 0;i<maxPumps;i++){
-    digitalWrite(valvePins[i],HIGH);
+    onPump(i);
   }
-  delay(time);
-  for(int i = 0;i<maxPumps;i++){
-    digitalWrite(valvePins[i],LOW);
+}
+
+void SecondCoreTaskFunction(void *pvParameters) {
+  while (true) {
+    pumpAll();
+    delay(960);
   }
 }
