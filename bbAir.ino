@@ -22,7 +22,7 @@ TaskHandle_t SecondCoreTask;
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-#define pumpTime 40
+#define pumpTime 50
 #define maxPumps 3
 
 #define OUT1 4
@@ -48,9 +48,11 @@ TaskHandle_t SecondCoreTask;
 #define OUT20 38   //Not Use
 #define OUTAir 39   //Air Pump
 
-int bubbleTime = 40;
+int bubbleTime = 0;
+int lineTime = 300;
+
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t valveOffsets[20] = {4,5,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 Ticker valveTickers[20];
 
 void loop() {
@@ -149,7 +151,7 @@ void setup() {
   setupWifi();
   //WiFi
 
-  pumpText("你好");
+  //pumpText("你好");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -196,48 +198,6 @@ void setup() {
 
 /////////////////////////////////
 
-void pumpText(String text){
-  int fontWidth = 8; // width of each character in the font
-  int fontHeight = 8; // height of each character in the font
-
-  int bitmapWidth = text.length() * fontWidth;
-  int bitmapHeight = fontHeight;
-  Serial.print("Length:");
-  Serial.println(text.length());
-  Serial.print("Width:");
-  Serial.println(bitmapWidth);
-  Serial.print("Height:");
-  Serial.println(bitmapHeight);  
-  GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
-  gfx.begin(canvas);
-  byte* bitmap = new byte[bitmapWidth * bitmapHeight]; // create bitmap array
-
-  // Clear bitmap
-  memset(bitmap, 0, bitmapWidth * bitmapHeight);
-
-  // Draw text on bitmap
-  gfx.setFont(pixelcorebb);
-  gfx.setCursor(0, fontHeight-1);
-  gfx.println(text);
-
-  // Convert bitmap to 0/1 array
-  for (int y = 0; y < bitmapHeight; y++) {
-    for (int x = 0; x < bitmapWidth; x++) {
-      int pixel = canvas.getPixel(x, y);
-      if (pixel == 1) {
-        bitmap[y * bitmapWidth + x] = 1;
-        Serial.print("⬜");
-      }
-      else Serial.print("⬛");
-    }
-    Serial.println("");
-  }
-
-  // Do something with the bitmap, e.g. send it to a server or save it to a file
-
-  delete[] bitmap; // free bitmap memory
-}
-
 void onPump(int no,int time = bubbleTime){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
   digitalWrite(valvePins[no],HIGH);
   valveTickers[no].once_ms(time + valveOffsets[no], offPump, no);
@@ -251,15 +211,97 @@ void pumpAll(int time = bubbleTime){
   digitalWrite(OUTAir,HIGH);
   delay(pumpTime);
   digitalWrite(OUTAir,LOW);
-  delay(500);
+  delay(100);
   for(int i = 0;i<maxPumps;i++){
     onPump(i);
   }
 }
 
+void pumpText(String text){
+  int fontWidth = 4; // width of each character in the font
+  int fontHeight = 8; // height of each character in the font
+
+  int bitmapWidth = text.length() * fontWidth;
+  int bitmapHeight = fontHeight;
+  /*
+  Serial.print("Length:");
+  Serial.println(text.length());
+  Serial.print("Width:");
+  Serial.println(bitmapWidth);
+  Serial.print("Height:");
+  Serial.println(bitmapHeight);  */
+  GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
+  gfx.begin(canvas);
+  byte* bitmap = new byte[bitmapWidth * bitmapHeight]; // create bitmap array
+
+  // Clear bitmap
+  memset(bitmap, 0, bitmapWidth * bitmapHeight);
+
+  // Draw text on bitmap
+  gfx.setFont(pixelcorebb);
+  gfx.setCursor(0, fontHeight-1);
+  gfx.println(text);
+
+  // Convert bitmap to 0/1 array
+   
+  for (int y = 0; y < bitmapHeight; y++) {
+    if(y > 1 && y < 7){
+      digitalWrite(OUTAir,HIGH); 
+      delay(pumpTime);
+      digitalWrite(OUTAir,LOW);
+      delay(50);
+      for (int x = 0; x < bitmapWidth; x++) {
+        int pixel = canvas.getPixel(x, y);
+        if (pixel == 1) {
+          bitmap[y * bitmapWidth + x] = 1;
+          //Serial.print("⬜");
+          onPump(x);
+        }
+      //else Serial.print("⬛");
+      }
+      delay(lineTime);
+    }    
+    
+    //Serial.println("");
+  }
+  
+
+  // Do something with the bitmap, e.g. send it to a server or save it to a file
+
+  delete[] bitmap; // free bitmap memory
+}
+
+void textTest(){
+  digitalWrite(OUTAir,HIGH); 
+  delay(pumpTime);
+  digitalWrite(OUTAir,LOW);
+  delay(100);
+  onPump(1);
+  delay(200);
+  for(int i =0;i<5;i++){
+    digitalWrite(OUTAir,HIGH); 
+    delay(pumpTime);
+    digitalWrite(OUTAir,LOW);
+    onPump(0);
+    onPump(2);
+    delay(400);
+  }
+  digitalWrite(OUTAir,HIGH); 
+  delay(pumpTime);
+  digitalWrite(OUTAir,LOW);
+  onPump(0);
+  onPump(1);
+  onPump(2);
+}
+
+int testText = 0;
 void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
-    pumpAll();
-    delay(960);
+    //textTest();
+    //pumpAll();
+    pumpText(String(testText));
+    testText += 1;
+    if (testText > 9) testText = 0;
+    delay(5000);
   }
 }
