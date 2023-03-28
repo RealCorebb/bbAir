@@ -17,8 +17,13 @@
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
+#include <ESPAsyncWebServer.h>
+AsyncWebServer server(80);
+
 Preferences preferences;
 TaskHandle_t SecondCoreTask;
+
+DynamicJsonDocument doc(1024);
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -53,7 +58,6 @@ int pumpTime = 100;
 int pumpNums = 1;
 
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-uint8_t valveOffsets[20] = {5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[3] = {0.6,0.8,1};
 Ticker valveTickers[20];
 
@@ -151,6 +155,7 @@ void setup() {
 
   //WiFi -_,-
   setupWifi();
+  setupWeb();
   //WiFi
 
   //pumpText("你好");
@@ -202,7 +207,7 @@ void setup() {
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
   digitalWrite(valvePins[no],HIGH);
-  valveTickers[no].once_ms(int(multi * valveOffsets[no]), offPump, no);
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
 }
 
 void offPump(int no){
