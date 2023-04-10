@@ -17,8 +17,13 @@
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
+#include <ESPAsyncWebServer.h>
+AsyncWebServer server(80);
+
 Preferences preferences;
 TaskHandle_t SecondCoreTask;
+
+DynamicJsonDocument doc(1024);
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -64,6 +69,7 @@ void loop() {
       ESP.restart();
     }
   }
+  //Serial.println("loop");
   ArduinoOTA.handle();
 }
 
@@ -122,7 +128,6 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 void setup() {
   analogSetAttenuation(ADC_6db);
-  analogSetCycles(16);
   preferences.begin("bbAir", false);
   // put your setup code here, to run once:
   for (int i = 0; i < 20; i++) {
@@ -154,6 +159,7 @@ void setup() {
 
   //WiFi -_,-
   setupWifi();
+  setupWeb();
   //WiFi
 
   //pumpText("你好");
@@ -207,7 +213,7 @@ void setup() {
     10000,                 // Stack size (words)
     NULL,                  // Task parameters
     1,                     // Task priority
-    &SecondCoreTask,       // Task handle
+    NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
 
@@ -218,7 +224,7 @@ void setup() {
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
   digitalWrite(valvePins[no],HIGH);
-  valveTickers[no].once_ms(int(multi * valveOffsets[no]), offPump, no);
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
 }
 
 void offPump(int no){
@@ -326,6 +332,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
     //textTest();
     //pumpAll();
+    Serial.println("pump");
     pumpText(String(testText));
     testText += 1;
     if (testText > 9) testText = 0;

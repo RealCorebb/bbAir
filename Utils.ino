@@ -1,25 +1,59 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
-DynamicJsonDocument doc(1024);
+
+void saveJson(){
+  File configFile = LittleFS.open("/config.json", "w");
+  if (serializeJson(doc, configFile) == 0) {
+    Serial.println("Failed to write to file");
+  }
+  configFile.close();
+}
 
 void initConfig() {
-  if(!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)){
-      Serial.println("LittleFS Mount Failed");
-      return;
+  if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
+    Serial.println("LittleFS Mount Failed");
+    return;
   }
-  //Open the SPIFFS file system
   if (!LittleFS.begin(true)) {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
-    //Create a config.json if it doesn't exist
-    if (!LittleFS.exists("/config.json")) {
-    //Serial.println("Creating config file");
+  
+  // Check if config.json file exists
+  if (!LittleFS.exists("/config.json")) {
+    Serial.println("Creating config file");
     File configFile = LittleFS.open("/config.json", "w");
     if (!configFile) {
-        Serial.println("Failed to create config file");
+      Serial.println("Failed to create config file");
+      return;
     }
-    //default Data
+    configFile.close();
+  }
+
+  // Read the config.json file
+  File configFile = LittleFS.open("/config.json", "r");
+  if (!configFile) {
+    Serial.println("Failed to open config file");
+    return;
+  }
+  
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, configFile);
+  if (error) {
+    Serial.println("Failed to read config file, using default configuration");
+  }
+
+  configFile.close();
+
+  // Check if any keys are missing and add default data if necessary
+  if (!doc.containsKey("pump")) {
+    doc["pump"] = true;
+  }
+  if (!doc.containsKey("led")) {
+    doc["led"] = true;
+  }
+  if (!doc.containsKey("schedule")) {
+    // Add default data
     JsonArray schedule = doc.createNestedArray("schedule");
     JsonObject textObject = schedule.createNestedObject();
     textObject["type"] = "text";
@@ -30,29 +64,16 @@ void initConfig() {
     JsonArray shapeData = shapeObject.createNestedArray("data");
     shapeData.add(559240);
     shapeData.add(279620);
-    //Create a JSON object with the data
-    JsonObject obj = doc.to<JsonObject>();
-    obj["pump"] = true;
-    obj["led"] = true;
-    //Write the JSON object to the config.json file
-        if (serializeJson(doc, configFile) == 0) {
-            Serial.println("Failed to write to file");
-        }
+  }
+  if (!doc.containsKey("valveOffsets")) {
+    JsonArray valveOffsets = doc.createNestedArray("valveOffsets");
+    for (int i = 0; i < 20; i++) {
+      valveOffsets.add(15);
     }
-    else {
-    //Serial.println("Config file exists");
-    //Open the config.json file
-    File configFile = LittleFS.open("/config.json", "r");
-    if (configFile) {
-        //Serial.println("Reading config file");
-        //Deserialize the JSON document
-        DeserializationError error = deserializeJson(doc, configFile);
-        if (error) {
-        Serial.println("Failed to read config file, using default configuration");
-        }
-    }
-    }
+  }
+  saveJson();
 }
+
 
 void pumpShape(const JsonArray& shapeData){
   //loop shapeData
@@ -97,8 +118,45 @@ void ledLoop(void *pvParameters){
 }
 
 void stressLoop(void *pvParameters){
+    //0 MPA    3770
+    //0.02 MPA
+    //0.04 MPA  3830
+    //0.08MPA 3870
     while(true){
       Serial.println(analogRead(4));
       delay(100);
     }
+}
+void setupWeb(){
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", String(ESP.getFreeHeap()));
+  });
+  server.on("/valveOffsets", HTTP_POST, [](AsyncWebServerRequest *request){
+    // Get the value of the "valveOffsets" parameter from the request body
+    String jsonString;
+    if(request->hasParam("valveOffsets", true)) { // Check if parameter exists and is not empty
+      jsonString = request->getParam("valveOffsets", true)->value();
+      Serial.println(jsonString);
+    }
+
+    // Update the valveOffsets array in the global DynamicJsonDocument
+    if (doc.containsKey("valveOffsets")) {
+        const size_t CAPACITY = JSON_ARRAY_SIZE(20);
+        DynamicJsonDocument newData(CAPACITY);
+        DeserializationError error = deserializeJson(newData, jsonString);
+        if (error) { // Check for deserialization errors
+            Serial.print(F("deserializeJson() failed: "));
+            Serial.println(error.c_str());
+            request->send(400, "Bad Request");
+            return;
+        }
+        JsonArray array = newData.as<JsonArray>();
+        doc["valveOffsets"].set(array);
+    }
+
+    request->send(200, "OK");
+});
+
+
+  server.begin();
 }
