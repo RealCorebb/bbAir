@@ -88,10 +88,17 @@ void setupLED(){
   strip.setBrightness(brightness);
 }
 
-void ledLoop(){
+void ledLoop(void *pvParameters){
   for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
     strip.rainbow(firstPixelHue);
     strip.show(); // Update strip with new contents
     delay(ledSpeed);  // Pause for a moment
   }
+}
+
+void stressLoop(void *pvParameters){
+    while(true){
+      Serial.println(analogRead(4));
+      delay(100);
+    }
 }

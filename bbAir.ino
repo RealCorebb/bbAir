@@ -24,7 +24,7 @@ TaskHandle_t SecondCoreTask;
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define maxPumps 3
 
-#define OUT1 4
+#define OUT1 38
 #define OUT2 5
 #define OUT3 6
 #define OUT4 7
@@ -48,13 +48,13 @@ TaskHandle_t SecondCoreTask;
 #define OUTAir 39   //Air Pump
 
 int bubbleTime = 0;
-int lineTime = 320;
+int lineTime = 300;
 int pumpTime = 100;
 int pumpNums = 1;
 
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-uint8_t valveOffsets[20] = {5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-float  multiply[3] = {0.6,0.8,1};
+uint8_t valveOffsets[20] = {35,10,40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+float  multiply[3] = {1,1,1};
 Ticker valveTickers[20];
 
 void loop() {
@@ -121,6 +121,8 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 
 void setup() {
+  analogSetAttenuation(ADC_6db);
+  analogSetCycles(16);
   preferences.begin("bbAir", false);
   // put your setup code here, to run once:
   for (int i = 0; i < 20; i++) {
@@ -128,6 +130,7 @@ void setup() {
   }
   pinMode(OUTAir,OUTPUT);
   Serial.begin(115200);
+  Serial.println("bbAir");
 
   //BLE -_,-
   BLEDevice::init("bbAir");
@@ -185,9 +188,22 @@ void setup() {
   initConfig();
   //OTA
 
+  digitalWrite(OUTAir,HIGH); 
+  delay(1000);
+  digitalWrite(OUTAir,LOW);
+
   xTaskCreatePinnedToCore(
     SecondCoreTaskFunction, // Task function
     "SecondCoreTask",      // Task name
+    10000,                 // Stack size (words)
+    NULL,                  // Task parameters
+    1,                     // Task priority
+    &SecondCoreTask,       // Task handle
+    0                      // Core to run the task on (1 = second core)
+  );
+  xTaskCreatePinnedToCore(
+    stressLoop, // Task function
+    "StressTask",      // Task name
     10000,                 // Stack size (words)
     NULL,                  // Task parameters
     1,                     // Task priority
