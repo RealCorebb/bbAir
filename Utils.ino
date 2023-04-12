@@ -123,7 +123,15 @@ void stressLoop(void *pvParameters){
     //0.04 MPA  3830
     //0.08MPA 3870
     while(true){
-      Serial.println(analogRead(4));
+      int sensorValue = analogRead(Stress);
+      input = sensorValue;
+      myPID.Compute();
+      int pumpSpeed = int(output);
+      analogWrite(OUTAir, pumpSpeed);   // Set PWM output
+      Serial.print("Sensor value: ");
+      Serial.print(sensorValue);
+      Serial.print(", Pump speed: ");
+      Serial.println(pumpSpeed);
       delay(100);
     }
 }

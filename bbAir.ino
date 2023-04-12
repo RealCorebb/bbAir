@@ -14,6 +14,8 @@
 #include <U8g2_for_Adafruit_GFX.h>
 #include <LittleFS.h>
 #include "Ticker.h"
+#include <PID_v1.h>
+
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
 
@@ -51,6 +53,17 @@ DynamicJsonDocument doc(1024);
 
 #define OUT20 38   //Not Use
 #define OUTAir 39   //Air Pump
+
+#define Stress 4  //Stress sensor
+
+double setpoint = 3800;
+double input, output;
+double Kp = 1;
+double Ki = 0.1;
+double Kd = 0.1;
+
+PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
+
 
 int bubbleTime = 0;
 int lineTime = 300;
@@ -133,7 +146,8 @@ void setup() {
   for (int i = 0; i < 20; i++) {
     pinMode(valvePins[i], OUTPUT);
   }
-  pinMode(OUTAir,OUTPUT);
+  myPID.SetMode(AUTOMATIC);
+  pinMode(OUTAir, OUTPUT);
   Serial.begin(115200);
   Serial.println("bbAir");
 
@@ -194,9 +208,6 @@ void setup() {
   initConfig();
   //OTA
 
-  digitalWrite(OUTAir,HIGH); 
-  delay(1000);
-  digitalWrite(OUTAir,LOW);
 
   xTaskCreatePinnedToCore(
     SecondCoreTaskFunction, // Task function
@@ -232,10 +243,6 @@ void offPump(int no){
 }
 
 void pumpAll(int time = bubbleTime){
-  digitalWrite(OUTAir,HIGH);
-  delay(pumpTime * pumpNums);
-  digitalWrite(OUTAir,LOW);
-  delay(20);
   for(int i = 0;i<maxPumps;i++){
     onPump(i);
   }
@@ -279,9 +286,6 @@ void pumpText(String text){
         }
       }
 
-      digitalWrite(OUTAir,HIGH);       
-      delay(pumpTime);
-      digitalWrite(OUTAir,LOW);
       for (int x = 0; x < bitmapWidth; x++) {
         int pixel = canvas.getPixel(x, y);
         if (pixel == 1) {
@@ -305,23 +309,14 @@ void pumpText(String text){
 }
 
 void textTest(){
-  digitalWrite(OUTAir,HIGH); 
-  delay(pumpTime * pumpNums);
-  digitalWrite(OUTAir,LOW);
   delay(100);
   onPump(1);
   delay(200);
   for(int i =0;i<5;i++){
-    digitalWrite(OUTAir,HIGH); 
-    delay(pumpTime * pumpNums);
-    digitalWrite(OUTAir,LOW);
     onPump(0);
     onPump(2);
     delay(400);
   }
-  digitalWrite(OUTAir,HIGH); 
-  delay(pumpTime * pumpNums);
-  digitalWrite(OUTAir,LOW);
   onPump(0);
   onPump(1);
   onPump(2);
