@@ -128,11 +128,10 @@ void stressLoop(void *pvParameters){
       myPID.Compute();
       int pumpSpeed = int(output);
       analogWrite(OUTAir, pumpSpeed);   // Set PWM output
-      Serial.print("Sensor value: ");
       Serial.print(sensorValue);
-      Serial.print(", Pump speed: ");
+      Serial.print(",");
       Serial.println(pumpSpeed);
-      delay(100);
+      delay(10);
     }
 }
 void setupWeb(){
