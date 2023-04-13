@@ -136,6 +136,7 @@ void stressLoop(void *pvParameters){
     }
 }
 void setupWeb(){
+  server.serveStatic("/", LittleFS, "/");
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });

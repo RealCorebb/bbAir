@@ -29,7 +29,7 @@ DynamicJsonDocument doc(1024);
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-#define maxPumps 3
+#define maxPumps 19
 
 #define OUT1 38
 #define OUT2 5
@@ -51,7 +51,7 @@ DynamicJsonDocument doc(1024);
 #define OUT18 36
 #define OUT19 37
 
-#define OUT20 38   //Not Use
+#define OUT20 40   //Not Use
 #define OUTAir 39   //Air Pump
 
 #define Stress 4  //Stress sensor
@@ -218,6 +218,7 @@ void setup() {
     &SecondCoreTask,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
+  /*
   xTaskCreatePinnedToCore(
     stressLoop, // Task function
     "StressTask",      // Task name
@@ -227,14 +228,14 @@ void setup() {
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
-
+*/
 }
 
 
 /////////////////////////////////
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
-  digitalWrite(valvePins[no],HIGH);
+  digitalWrite(valvePins[no],HIGH); 
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
 }
 
@@ -326,11 +327,11 @@ int testText = 0;
 void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
     //textTest();
-    //pumpAll();
+    pumpAll();
     Serial.println("pump");
-    pumpText(String(testText));
-    testText += 1;
-    if (testText > 9) testText = 0;
+    //pumpText(String(testText));
+    //testText += 1;
+    //if (testText > 9) testText = 0;
     delay(3000);
   }
 }
