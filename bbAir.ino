@@ -58,9 +58,9 @@ DynamicJsonDocument doc(1024);
 
 double setpoint = 3800;
 double input, output;
-double Kp = 1;
-double Ki = 0.1;
-double Kd = 0.1;
+double Kp = 10;
+double Ki = 0.001;
+double Kd = 0;
 
 PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
