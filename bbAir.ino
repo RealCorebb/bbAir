@@ -56,11 +56,15 @@ DynamicJsonDocument doc(1024);
 
 #define Stress 4  //Stress sensor
 
-double setpoint = 3800;
+double setpoint = 3830;
 double input, output;
 double Kp = 10;
 double Ki = 0.001;
 double Kd = 0;
+
+const float alpha = 0.5;
+int sensorValue = 0;
+float smoothedValue = 0;
 
 PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
@@ -140,6 +144,7 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 
 void setup() {
+  analogWriteFrequency(500);
   analogSetAttenuation(ADC_6db);
   preferences.begin("bbAir", false);
   // put your setup code here, to run once:
@@ -218,7 +223,7 @@ void setup() {
     &SecondCoreTask,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
-  /*
+  
   xTaskCreatePinnedToCore(
     stressLoop, // Task function
     "StressTask",      // Task name
@@ -228,7 +233,7 @@ void setup() {
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
-*/
+
 }
 
 
@@ -327,6 +332,7 @@ int testText = 0;
 void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
     //textTest();
+    Serial.println(smoothedValue);
     pumpAll();
     Serial.println("pump");
     //pumpText(String(testText));

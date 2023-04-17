@@ -122,16 +122,28 @@ void stressLoop(void *pvParameters){
     //0.02 MPA
     //0.04 MPA  3830
     //0.08MPA 3870
+    /*
     while(true){
       int sensorValue = analogRead(Stress);
       input = sensorValue;
       myPID.Compute();
       int pumpSpeed = int(output);
+      if(pumpSpeed < 60) pumpSpeed = 0;
       analogWrite(OUTAir, pumpSpeed);   // Set PWM output
       Serial.print(sensorValue);
       Serial.print(",");
       Serial.println(pumpSpeed);
-      delay(10);
+      delay(5);
+    }*/
+    while(true){
+      sensorValue = analogRead(Stress);
+        smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
+        if (smoothedValue >= 3830) {
+          digitalWrite(OUTAir, LOW);
+        } else {
+          digitalWrite(OUTAir, HIGH);
+        }
+        delay(50);
     }
 }
 void setupWeb(){
