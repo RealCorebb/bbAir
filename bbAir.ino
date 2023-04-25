@@ -47,11 +47,11 @@ DynamicJsonDocument doc(1024);
 #define OUT14 13
 #define OUT15 14
 #define OUT16 21
-#define OUT17 36
-#define OUT18 37
-#define OUT19 40
+#define OUT17 35
+#define OUT18 36
+#define OUT19 37
 
-#define OUT20 35   //Not Use
+#define OUT20 40   //Not Use
 #define OUTAir 39   //Air Pump
 
 #define Stress 4  //Stress sensor
