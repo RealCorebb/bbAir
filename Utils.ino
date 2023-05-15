@@ -1,7 +1,7 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
 
-void saveJson(){
+void saveJson() {
   File configFile = LittleFS.open("/config.json", "w");
   if (serializeJson(doc, configFile) == 0) {
     Serial.println("Failed to write to file");
@@ -18,7 +18,7 @@ void initConfig() {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
-  
+
   // Check if config.json file exists
   if (!LittleFS.exists("/config.json")) {
     Serial.println("Creating config file");
@@ -36,7 +36,7 @@ void initConfig() {
     Serial.println("Failed to open config file");
     return;
   }
-  
+
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
   if (error) {
@@ -75,55 +75,53 @@ void initConfig() {
 }
 
 
-void pumpShape(const JsonArray& shapeData){
+void pumpShape(const JsonArray &shapeData) {
   //loop shapeData
-    for (int i = 0; i < shapeData.size(); i++) {
-      int shapeDecimal = shapeData[i];
-      int num_bits = 0;
-      int temp = shapeDecimal;
-      while (temp > 0) {
-          num_bits++;
-          temp >>= 1;
-      }
-      for (int i = 0; i < num_bits; i++) {
-        int pixel = bitRead(shapeDecimal, i);
-        if (pixel == 1) {
-          Serial.print("⬜");
-        }
-        else Serial.print("⬛");
-      }
-      delay(bubbleTime);
+  for (int i = 0; i < shapeData.size(); i++) {
+    int shapeDecimal = shapeData[i];
+    int num_bits = 0;
+    int temp = shapeDecimal;
+    while (temp > 0) {
+      num_bits++;
+      temp >>= 1;
     }
+    for (int i = 0; i < num_bits; i++) {
+      int pixel = bitRead(shapeDecimal, i);
+      if (pixel == 1) {
+        Serial.print("⬜");
+      } else Serial.print("⬛");
+    }
+    delay(bubbleTime);
+  }
 }
 
 // LED   -_,-
-#define PIN       41
+#define PIN 41
 #define NUMPIXELS 19
 int brightness = 50;
 int ledSpeed = 10;
 Adafruit_NeoPixel strip(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-void setupLED(){
+void setupLED() {
   strip.begin();
   strip.show();
   strip.setBrightness(brightness);
 }
 
-void ledLoop(void *pvParameters){
-  for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+void ledLoop(void *pvParameters) {
+  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
     strip.rainbow(firstPixelHue);
-    strip.show(); // Update strip with new contents
+    strip.show();     // Update strip with new contents
     delay(ledSpeed);  // Pause for a moment
   }
 }
 
-bool lastOpen = false;
-void stressLoop(void *pvParameters){
-    //0 MPA    3770
-    //0.02 MPA
-    //0.04 MPA  3830
-    //0.08MPA 3870
-    /*
+void stressLoop(void *pvParameters) {
+  //0 MPA    3770
+  //0.02 MPA
+  //0.04 MPA  3830
+  //0.08MPA 3870
+  /*
     while(true){
       int sensorValue = analogRead(Stress);
       input = sensorValue;
@@ -136,55 +134,47 @@ void stressLoop(void *pvParameters){
       Serial.println(pumpSpeed);
       delay(5);
     }*/
-    while(true){
-      sensorValue = analogRead(Stress);
-        smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
-        if (smoothedValue >= 3830) {
-            digitalWrite(OUTAir, LOW);
-            lastOpen = false;           
-        } else {
-          if(!lastOpen){
-            digitalWrite(OUTAir, HIGH);
-            lastOpen = true;
-          }
-          else{
-            digitalWrite(OUTAir, LOW);
-            lastOpen = false;
-          }
-        }
-        delay(25);
+  while (true) {
+    sensorValue = analogRead(Stress);
+    smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
+    if (smoothedValue >= 3810) {
+      analogWrite(OUTAir,0);
+    } else {
+      analogWrite(OUTAir,128);
     }
+    delay(10);
+  }
 }
-void setupWeb(){
+void setupWeb() {
   server.serveStatic("/", LittleFS, "/");
-  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
-  server.on("/valveOffsets", HTTP_POST, [](AsyncWebServerRequest *request){
+  server.on("/valveOffsets", HTTP_POST, [](AsyncWebServerRequest *request) {
     // Get the value of the "valveOffsets" parameter from the request body
     String jsonString;
-    if(request->hasParam("valveOffsets", true)) { // Check if parameter exists and is not empty
+    if (request->hasParam("valveOffsets", true)) {  // Check if parameter exists and is not empty
       jsonString = request->getParam("valveOffsets", true)->value();
       Serial.println(jsonString);
     }
 
     // Update the valveOffsets array in the global DynamicJsonDocument
     if (doc.containsKey("valveOffsets")) {
-        const size_t CAPACITY = JSON_ARRAY_SIZE(20);
-        DynamicJsonDocument newData(CAPACITY);
-        DeserializationError error = deserializeJson(newData, jsonString);
-        if (error) { // Check for deserialization errors
-            Serial.print(F("deserializeJson() failed: "));
-            Serial.println(error.c_str());
-            request->send(400, "Bad Request");
-            return;
-        }
-        JsonArray array = newData.as<JsonArray>();
-        doc["valveOffsets"].set(array);
+      const size_t CAPACITY = JSON_ARRAY_SIZE(20);
+      DynamicJsonDocument newData(CAPACITY);
+      DeserializationError error = deserializeJson(newData, jsonString);
+      if (error) {  // Check for deserialization errors
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.c_str());
+        request->send(400, "Bad Request");
+        return;
+      }
+      JsonArray array = newData.as<JsonArray>();
+      doc["valveOffsets"].set(array);
     }
 
     request->send(200, "OK");
-});
+  });
 
 
   server.begin();
