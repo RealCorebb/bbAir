@@ -31,28 +31,28 @@ DynamicJsonDocument doc(1024);
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define maxPumps 19
 
-#define OUT1 38
-#define OUT2 5
-#define OUT3 6
-#define OUT4 7
-#define OUT5 15
-#define OUT6 16
-#define OUT7 17
-#define OUT8 18
-#define OUT9 8
-#define OUT10 9
-#define OUT11 10
-#define OUT12 11
-#define OUT13 12
-#define OUT14 13
-#define OUT15 14
-#define OUT16 21
-#define OUT17 35
-#define OUT18 36
-#define OUT19 37
+#define OUT1 16
+#define OUT2 15
+#define OUT3 7
+#define OUT4 6
+#define OUT5 5
+#define OUT6 38
+#define OUT7 13
+#define OUT8 12
+#define OUT9 11
+#define OUT10 10
+#define OUT11 9
+#define OUT12 8
+#define OUT13 18
+#define OUT14 39
+#define OUT15 40
+#define OUT16 37
+#define OUT17 36
+#define OUT18 35
+#define OUT19 21
 
-#define OUT20 40   //Not Use
-#define OUTAir 39   //Air Pump
+#define OUT20 14   //Not Use
+#define OUTAir 17   //Air Pump
 
 #define Stress 4  //Stress sensor
 

@@ -68,7 +68,7 @@ void initConfig() {
   if (!doc.containsKey("valveOffsets")) {
     JsonArray valveOffsets = doc.createNestedArray("valveOffsets");
     for (int i = 0; i < 20; i++) {
-      valveOffsets.add(15);
+      valveOffsets.add(100);
     }
   }
   saveJson();
@@ -117,6 +117,7 @@ void ledLoop(void *pvParameters){
   }
 }
 
+bool lastOpen = false;
 void stressLoop(void *pvParameters){
     //0 MPA    3770
     //0.02 MPA
@@ -139,11 +140,19 @@ void stressLoop(void *pvParameters){
       sensorValue = analogRead(Stress);
         smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
         if (smoothedValue >= 3830) {
-          digitalWrite(OUTAir, LOW);
+            digitalWrite(OUTAir, LOW);
+            lastOpen = false;           
         } else {
-          digitalWrite(OUTAir, HIGH);
+          if(!lastOpen){
+            digitalWrite(OUTAir, HIGH);
+            lastOpen = true;
+          }
+          else{
+            digitalWrite(OUTAir, LOW);
+            lastOpen = false;
+          }
         }
-        delay(50);
+        delay(25);
     }
 }
 void setupWeb(){
