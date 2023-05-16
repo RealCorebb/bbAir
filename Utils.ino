@@ -116,6 +116,7 @@ void ledLoop(void *pvParameters) {
   }
 }
 
+int lowTimes = 0;
 void stressLoop(void *pvParameters) {
   //0 MPA    3770
   //0.02 MPA
@@ -138,9 +139,13 @@ void stressLoop(void *pvParameters) {
     sensorValue = analogRead(Stress);
     smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
     if (smoothedValue >= 3810) {
+      lowTimes = 0;
       analogWrite(OUTAir,0);
     } else {
-      analogWrite(OUTAir,128);
+      lowTimes++;
+      if(lowTimes >= 8){
+        analogWrite(OUTAir,150);
+      }
     }
     delay(10);
   }

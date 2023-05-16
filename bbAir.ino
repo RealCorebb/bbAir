@@ -62,7 +62,7 @@ double Kp = 10;
 double Ki = 0.001;
 double Kd = 0;
 
-const float alpha = 0.5;
+const float alpha = 0.6;
 int sensorValue = 0;
 float smoothedValue = 0;
 
