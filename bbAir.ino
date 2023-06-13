@@ -75,7 +75,7 @@ int pumpTime = 100;
 int pumpNums = 1;
 
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-uint8_t valveOffsets[20] = {35,10,40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[3] = {1,1,1};
 Ticker valveTickers[20];
 
@@ -240,17 +240,26 @@ void setup() {
 /////////////////////////////////
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
-  digitalWrite(valvePins[no],HIGH); 
+  digitalWrite(valvePins[no],LOW); 
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
 }
 
 void offPump(int no){
-  digitalWrite(valvePins[no],LOW);
+  digitalWrite(valvePins[no],HIGH);
 }
 
 void pumpAll(int time = bubbleTime){
   for(int i = 0;i<maxPumps;i++){
     onPump(i);
+  }
+}
+
+void pumpOneByOne(int time = bubbleTime){
+  for(int i = 0;i<maxPumps;i++){
+    digitalWrite(valvePins[i],LOW);
+    delay(int(doc["valveOffsets"][i].as<int>()));
+    digitalWrite(valvePins[i],HIGH);
+    delay(300);
   }
 }
 
@@ -333,11 +342,12 @@ void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
     //textTest();
     Serial.println(smoothedValue);
-    pumpAll();
+    //pumpAll();
+    pumpOneByOne();    
     Serial.println("pump");
     //pumpText(String(testText));
     //testText += 1;
     //if (testText > 9) testText = 0;
-    delay(3000);
+    delay(15000);
   }
 }
