@@ -82,14 +82,37 @@ Ticker valveTickers[20];
 void loop() {
   if (Serial.available()) {
     String command = Serial.readString();
-    if (command == "reset") {
+    command.trim(); // Remove leading/trailing whitespaces
+
+    if (command.startsWith("ON")) {
+      // Extract the valve number from the command
+      int valveNumber = command.substring(2).toInt();
+      // Check if the valve number is within the valid range
+      if (valveNumber >= 1 && valveNumber <= 20) {
+        // Set the valve pin HIGH
+        digitalWrite(valvePins[valveNumber - 1], LOW);
+      } else {
+        Serial.println("Invalid valve number");
+      }
+    } else if (command.startsWith("OFF")) {
+      // Extract the valve number from the command
+      int valveNumber = command.substring(3).toInt();
+      // Check if the valve number is within the valid range
+      if (valveNumber >= 1 && valveNumber <= 20) {
+        // Set the valve pin LOW
+        digitalWrite(valvePins[valveNumber - 1], HIGH);
+      } else {
+        Serial.println("Invalid valve number");
+      }
+    } else if (command == "reset") {
       ESP.restart();
+    } else {
+      Serial.println("Invalid command");
     }
   }
-  //Serial.println("loop");
+
   ArduinoOTA.handle();
 }
-
 
 void setupWifi(){
   String ssid = preferences.getString("ssid","Hollyshit_A");
@@ -150,6 +173,7 @@ void setup() {
   // put your setup code here, to run once:
   for (int i = 0; i < 20; i++) {
     pinMode(valvePins[i], OUTPUT);
+    digitalWrite(valvePins[i],HIGH);
   }
   myPID.SetMode(AUTOMATIC);
   pinMode(OUTAir, OUTPUT);
@@ -339,15 +363,16 @@ void textTest(){
 
 int testText = 0;
 void SecondCoreTaskFunction(void *pvParameters) {
+  //pumpAll();
   while (true) {
     //textTest();
     Serial.println(smoothedValue);
     //pumpAll();
-    pumpOneByOne();    
-    Serial.println("pump");
-    //pumpText(String(testText));
-    //testText += 1;
-    //if (testText > 9) testText = 0;
-    delay(15000);
+    //pumpOneByOne();    
+    //Serial.println("pump");
+    pumpText(String(testText));
+    testText += 1;
+    if (testText > 9) testText = 0;
+    delay(2000);
   }
 }

@@ -68,7 +68,7 @@ void initConfig() {
   if (!doc.containsKey("valveOffsets")) {
     JsonArray valveOffsets = doc.createNestedArray("valveOffsets");
     for (int i = 0; i < 20; i++) {
-      valveOffsets.add(5);
+      valveOffsets.add(100);
     }
   }
   saveJson();
@@ -137,14 +137,17 @@ void stressLoop(void *pvParameters) {
     }*/
   while (true) {
     sensorValue = analogRead(Stress);
+    Serial.println(sensorValue);
     smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
-    if (smoothedValue >= 3810) {
+    if (smoothedValue >= 3820) {
       lowTimes = 0;
-      analogWrite(OUTAir,0);
+      digitalWrite(OUTAir,LOW);
+      //analogWrite(OUTAir,0);
     } else {
       lowTimes++;
       if(lowTimes >= 8){
-        analogWrite(OUTAir,150);
+        digitalWrite(OUTAir,HIGH);
+        //analogWrite(OUTAir,150);
       }
     }
     delay(10);
@@ -177,8 +180,33 @@ void setupWeb() {
       JsonArray array = newData.as<JsonArray>();
       doc["valveOffsets"].set(array);
     }
-
     request->send(200, "OK");
+  });
+
+   server.on("/valve", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("valveNumber")) {
+      int valveNumber = request->getParam("valveNumber")->value().toInt();
+      if (valveNumber >= 1 && valveNumber <= 20) {
+        if (request->hasParam("state")) {
+          String state = request->getParam("state")->value();
+          if (state.equalsIgnoreCase("on")) {
+            digitalWrite(valvePins[valveNumber - 1], HIGH);
+            request->send(200, "text/plain", "Valve turned ON");
+          } else if (state.equalsIgnoreCase("off")) {
+            digitalWrite(valvePins[valveNumber - 1], LOW);
+            request->send(200, "text/plain", "Valve turned OFF");
+          } else {
+            request->send(400, "text/plain", "Invalid state parameter");
+          }
+        } else {
+          request->send(400, "text/plain", "Missing state parameter");
+        }
+      } else {
+        request->send(400, "text/plain", "Invalid valve number");
+      }
+    } else {
+      request->send(400, "text/plain", "Missing valveNumber parameter");
+    }
   });
 
 
