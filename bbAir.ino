@@ -56,6 +56,11 @@ DynamicJsonDocument doc(1024);
 
 #define Stress 4  //Stress sensor
 
+#define PIN        42
+#define NUMPIXELS 19 
+
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 double setpoint = 3830;
 double input, output;
 double Kp = 10;
@@ -203,6 +208,7 @@ void setup() {
   //WiFi -_,-
   setupWifi();
   setupWeb();
+  setupLED();
   //WiFi
 
   //pumpText("你好");
@@ -249,7 +255,7 @@ void setup() {
   );
   
   xTaskCreatePinnedToCore(
-    stressLoop, // Task function
+    ledLoop, // Task function
     "StressTask",      // Task name
     10000,                 // Stack size (words)
     NULL,                  // Task parameters
@@ -257,7 +263,6 @@ void setup() {
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
-
 }
 
 
@@ -372,7 +377,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //Serial.println("pump");
     pumpText(String(testText));
     testText += 1;
-    if (testText > 9) testText = 0;
+    //if (testText > 9) testText = 0;
     delay(2000);
   }
 }
