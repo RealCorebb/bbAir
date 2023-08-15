@@ -177,9 +177,16 @@ void setupWeb() {
         request->send(400, "Bad Request");
         return;
       }
-      JsonArray array = newData.as<JsonArray>();
-      doc["valveOffsets"].set(array);
-      saveJson();
+      JsonArray newArray = newData.as<JsonArray>();
+      
+      // Clear the existing array and copy new data
+      JsonArray existingArray = doc["valveOffsets"].as<JsonArray>();
+      existingArray.clear();
+      for (JsonVariant v : newArray) {
+        existingArray.add(v);
+      }
+      
+      saveJson(); // Save the modified JSON
     }
     request->send(200, "OK");
   });
@@ -190,7 +197,11 @@ void setupWeb() {
       if (valveNumber >= 1 && valveNumber <= 20) {
         if (request->hasParam("state")) {
           String state = request->getParam("state")->value();
-          if (state.equalsIgnoreCase("on")) {
+          if (state.equalsIgnoreCase("pump")) {
+            onPump(valveNumber - 1);
+            request->send(200, "text/plain", "Valve pump");
+          }
+          else if (state.equalsIgnoreCase("on")) {
             digitalWrite(valvePins[valveNumber - 1], HIGH);
             request->send(200, "text/plain", "Valve turned ON");
           } else if (state.equalsIgnoreCase("off")) {
@@ -220,11 +231,12 @@ uint32_t staticColor = 0xFFB6C1;
 
 void rainbowLoop() {
   static uint16_t startIndex = 0;
-  startIndex = (startIndex + 1) % PixelCount;
+  startIndex = (startIndex + 1) % NUMPIXELS;
 
-  for (uint16_t i = 0; i < strip.PixelCount(); i++) {
-    float hue = (float)(startIndex + i) / strip.PixelCount();
-    RgbColor color = HslColor(hue, 1.0f, 1.0f).Dim(ledDim[i]/255);
+  for (uint16_t i = 0; i < NUMPIXELS; i++) {
+    float hue = (float)(startIndex + i) / NUMPIXELS;
+    RgbColor color = HslColor(hue, 1.0f, 1.0f);
+    color = color.Dim(ledDim[i]/255);
     strip.SetPixelColor(i, color);
   }
 
@@ -233,8 +245,9 @@ void rainbowLoop() {
 }
 
 void staticLoop(){
-  for (uint16_t i = 0; i < strip.PixelCount(); i++) {
-    RgbColor color = HtmlColor(staticColor).Dim(ledDim[i]/255);
+  for (uint16_t i = 0; i < NUMPIXELS; i++) {
+    RgbColor color = HtmlColor(staticColor);
+    color = color.Dim(ledDim[i]/255);
     strip.SetPixelColor(i, color);
   }
   strip.Show();
