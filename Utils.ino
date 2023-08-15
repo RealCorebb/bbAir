@@ -149,7 +149,7 @@ void stressLoop(void *pvParameters) {
     sensorValue = analogRead(Stress);
     Serial.println(sensorValue);
     smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
-    if (smoothedValue >= 3830) {
+    if (smoothedValue >= 3870) {
       lowTimes = 0;
       digitalWrite(OUTAir,LOW);
       //analogWrite(OUTAir,0);
@@ -201,10 +201,10 @@ void setupWeb() {
         if (request->hasParam("state")) {
           String state = request->getParam("state")->value();
           if (state.equalsIgnoreCase("on")) {
-            digitalWrite(valvePins[valveNumber - 1], HIGH);
+            digitalWrite(valvePins[valveNumber - 1], LOW);
             request->send(200, "text/plain", "Valve turned ON");
           } else if (state.equalsIgnoreCase("off")) {
-            digitalWrite(valvePins[valveNumber - 1], LOW);
+            digitalWrite(valvePins[valveNumber - 1], HIGH);
             request->send(200, "text/plain", "Valve turned OFF");
           } else {
             request->send(400, "text/plain", "Invalid state parameter");

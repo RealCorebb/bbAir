@@ -75,7 +75,7 @@ PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
 
 int bubbleTime = 0;
-int lineTime = 300;
+int lineTime = 250;
 int pumpTime = 100;
 int pumpNums = 1;
 
@@ -95,7 +95,7 @@ void loop() {
       // Check if the valve number is within the valid range
       if (valveNumber >= 1 && valveNumber <= 20) {
         // Set the valve pin HIGH
-        digitalWrite(valvePins[valveNumber - 1], LOW);
+        digitalWrite(valvePins[valveNumber - 1], HIGH);
       } else {
         Serial.println("Invalid valve number");
       }
@@ -105,7 +105,7 @@ void loop() {
       // Check if the valve number is within the valid range
       if (valveNumber >= 1 && valveNumber <= 20) {
         // Set the valve pin LOW
-        digitalWrite(valvePins[valveNumber - 1], HIGH);
+        digitalWrite(valvePins[valveNumber - 1], LOW);
       } else {
         Serial.println("Invalid valve number");
       }
@@ -178,7 +178,7 @@ void setup() {
   // put your setup code here, to run once:
   for (int i = 0; i < 20; i++) {
     pinMode(valvePins[i], OUTPUT);
-    digitalWrite(valvePins[i],HIGH);
+    digitalWrite(valvePins[i],LOW);
   }
   myPID.SetMode(AUTOMATIC);
   pinMode(OUTAir, OUTPUT);
@@ -269,12 +269,12 @@ void setup() {
 /////////////////////////////////
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
-  digitalWrite(valvePins[no],LOW); 
+  digitalWrite(valvePins[no],HIGH); 
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
 }
 
 void offPump(int no){
-  digitalWrite(valvePins[no],HIGH);
+  digitalWrite(valvePins[no],LOW);
 }
 
 void pumpAll(int time = bubbleTime){
@@ -285,9 +285,9 @@ void pumpAll(int time = bubbleTime){
 
 void pumpOneByOne(int time = bubbleTime){
   for(int i = 0;i<maxPumps;i++){
-    digitalWrite(valvePins[i],LOW);
-    delay(int(doc["valveOffsets"][i].as<int>()));
     digitalWrite(valvePins[i],HIGH);
+    delay(int(doc["valveOffsets"][i].as<int>()));
+    digitalWrite(valvePins[i],LOW);
     delay(300);
   }
 }
@@ -371,11 +371,11 @@ void SecondCoreTaskFunction(void *pvParameters) {
   //pumpAll();
   while (true) {
     //textTest();
-    Serial.println(smoothedValue);
+    //Serial.println(smoothedValue);
     //pumpAll();
-    //pumpOneByOne();    
+    pumpOneByOne();    
     //Serial.println("pump");
-    pumpText(String(testText));
+    //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
     delay(2000);
