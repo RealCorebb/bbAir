@@ -1,7 +1,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <ArduinoJson.h>
-#include <Adafruit_NeoPixel.h>
+#include <NeoPixelBusLg.h>
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
@@ -14,7 +14,6 @@
 #include <U8g2_for_Adafruit_GFX.h>
 #include <LittleFS.h>
 #include "Ticker.h"
-#include <PID_v1.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -59,8 +58,6 @@ DynamicJsonDocument doc(1024);
 #define PIN        42
 #define NUMPIXELS 19 
 
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
 double setpoint = 3830;
 double input, output;
 double Kp = 10;
@@ -70,8 +67,7 @@ double Kd = 0;
 const float alpha = 0.6;
 int sensorValue = 0;
 float smoothedValue = 0;
-
-PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
+;
 
 
 int bubbleTime = 0;
@@ -82,40 +78,10 @@ int pumpNums = 1;
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
 uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+uint8_t ledDim[20] = {255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255};
 Ticker valveTickers[20];
 
 void loop() {
-  if (Serial.available()) {
-    String command = Serial.readString();
-    command.trim(); // Remove leading/trailing whitespaces
-
-    if (command.startsWith("ON")) {
-      // Extract the valve number from the command
-      int valveNumber = command.substring(2).toInt();
-      // Check if the valve number is within the valid range
-      if (valveNumber >= 1 && valveNumber <= 20) {
-        // Set the valve pin HIGH
-        digitalWrite(valvePins[valveNumber - 1], HIGH);
-      } else {
-        Serial.println("Invalid valve number");
-      }
-    } else if (command.startsWith("OFF")) {
-      // Extract the valve number from the command
-      int valveNumber = command.substring(3).toInt();
-      // Check if the valve number is within the valid range
-      if (valveNumber >= 1 && valveNumber <= 20) {
-        // Set the valve pin LOW
-        digitalWrite(valvePins[valveNumber - 1], LOW);
-      } else {
-        Serial.println("Invalid valve number");
-      }
-    } else if (command == "reset") {
-      ESP.restart();
-    } else {
-      Serial.println("Invalid command");
-    }
-  }
-
   ArduinoOTA.handle();
 }
 
@@ -180,7 +146,6 @@ void setup() {
     pinMode(valvePins[i], OUTPUT);
     digitalWrite(valvePins[i],LOW);
   }
-  myPID.SetMode(AUTOMATIC);
   pinMode(OUTAir, OUTPUT);
   Serial.begin(115200);
   Serial.println("bbAir");
