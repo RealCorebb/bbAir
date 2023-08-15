@@ -55,9 +55,6 @@ DynamicJsonDocument doc(1024);
 
 #define Stress 4  //Stress sensor
 
-#define PIN        42
-#define NUMPIXELS 19 
-
 double setpoint = 3830;
 double input, output;
 double Kp = 10;

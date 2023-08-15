@@ -96,7 +96,7 @@ void pumpShape(const JsonArray &shapeData) {
 }
 
 // LED   -_,-
-#define PIN 42
+#define PIN 4 //42
 #define NUMPIXELS 19
 int brightness = 255;
 int ledSpeed = 10;
@@ -113,7 +113,9 @@ int lowTimes = 0;
 
 void ledLoop(void *pvParameters){
   while (true) {
+    //Serial.println("led");
     rainbowLoop();
+    //staticLoop();
   }
 }
 
@@ -227,18 +229,20 @@ void setupWeb() {
 
 
 //LED
-uint32_t staticColor = 0xFFB6C1;
+uint32_t staticColor = 0x89CFF0;
 
 void rainbowLoop() {
-  static uint16_t startIndex = 0;
-  startIndex = (startIndex + 1) % NUMPIXELS;
+  static float startIndex = 0;
+  
 
-  for (uint16_t i = 0; i < NUMPIXELS; i++) {
-    float hue = (float)(startIndex + i) / NUMPIXELS;
-    RgbColor color = HslColor(hue, 1.0f, 1.0f);
-    color = color.Dim(ledDim[i]/255);
+  for (float i = 0; i < NUMPIXELS; i++) {
+    float hue = startIndex + (i / (NUMPIXELS * 2));
+    RgbColor color = HslColor(hue, 1.0f, 0.5f);
+    //color = color.Dim(ledDim[i]/255);
     strip.SetPixelColor(i, color);
   }
+  startIndex = startIndex + 0.005;
+  if(startIndex > 1) startIndex = 0;
 
   strip.Show();
   delay(10);  // Delay to control the speed of the loop
@@ -247,7 +251,7 @@ void rainbowLoop() {
 void staticLoop(){
   for (uint16_t i = 0; i < NUMPIXELS; i++) {
     RgbColor color = HtmlColor(staticColor);
-    color = color.Dim(ledDim[i]/255);
+    //color = color.Dim(ledDim[i]/255);
     strip.SetPixelColor(i, color);
   }
   strip.Show();
