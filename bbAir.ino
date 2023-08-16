@@ -77,6 +77,7 @@ uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 uint8_t ledDim[20] = {255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255};
 Ticker valveTickers[20];
+Ticker ledTickers[20];
 
 void loop() {
   ArduinoOTA.handle();
@@ -232,11 +233,20 @@ void setup() {
 
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
   digitalWrite(valvePins[no],HIGH); 
+  ledDim[no] = 255;
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
+  ledTickers[no].once_ms(500,offLed,no);
 }
 
 void offPump(int no){
   digitalWrite(valvePins[no],LOW);
+}
+
+void offLed(int no){
+  if(ledDim[no] > 0){
+    ledDim[no] -= 15;
+    ledTickers[no].once_ms(20, offLed, no);
+  }
 }
 
 void pumpAll(int time = bubbleTime){
@@ -247,9 +257,11 @@ void pumpAll(int time = bubbleTime){
 
 void pumpOneByOne(int time = bubbleTime){
   for(int i = 0;i<maxPumps;i++){
+    /*
     digitalWrite(valvePins[i],HIGH);
     delay(int(doc["valveOffsets"][i].as<int>()));
-    digitalWrite(valvePins[i],LOW);
+    digitalWrite(valvePins[i],LOW);*/
+    onPump(i);
     delay(300);
   }
 }

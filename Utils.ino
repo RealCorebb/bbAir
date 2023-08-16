@@ -96,7 +96,7 @@ void pumpShape(const JsonArray &shapeData) {
 }
 
 // LED   -_,-
-#define PIN 4 //42
+#define PIN 42
 #define NUMPIXELS 19
 int brightness = 255;
 int ledSpeed = 10;
@@ -235,10 +235,10 @@ void rainbowLoop() {
   static float startIndex = 0;
   
 
-  for (float i = 0; i < NUMPIXELS; i++) {
-    float hue = startIndex + (i / (NUMPIXELS * 2));
+  for (int i = 0; i < NUMPIXELS; i++) {
+    float hue = startIndex - (float(i) / (NUMPIXELS * 2));
     RgbColor color = HslColor(hue, 1.0f, 0.5f);
-    //color = color.Dim(ledDim[i]/255);
+    color = color.Dim(ledDim[i]);
     strip.SetPixelColor(i, color);
   }
   startIndex = startIndex + 0.005;
@@ -251,7 +251,7 @@ void rainbowLoop() {
 void staticLoop(){
   for (uint16_t i = 0; i < NUMPIXELS; i++) {
     RgbColor color = HtmlColor(staticColor);
-    //color = color.Dim(ledDim[i]/255);
+    color = color.Dim(ledDim[i]);
     strip.SetPixelColor(i, color);
   }
   strip.Show();
