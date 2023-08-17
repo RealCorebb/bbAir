@@ -267,10 +267,24 @@ void pumpOneByOne(int time = bubbleTime){
 }
 
 void pumpText(String text){
-  int fontWidth = 4; // width of each character in the font
+  int fontWidth = 4; // width of each character in the font   //4 is ASCII    8 is Chinese
   int fontHeight = 8; // height of each character in the font
 
-  int bitmapWidth = text.length() * fontWidth;
+  int customLength = 0;
+  for (int i = 0; i < text.length(); i++) {
+    if ((text[i] & 0xC0) != 0x80) {
+      // Increment the count for the first byte of a UTF-8 character
+      customLength++;
+      
+      if ((text[i] & 0xE0) == 0xE0) {
+        // If the byte starts with '1110', it's a 3-byte UTF-8 character (like Chinese)
+        // Increment the count again to treat it as double the length of an ASCII character
+        customLength++;
+      }
+    }
+  }
+
+  int bitmapWidth = customLength * fontWidth;
   int bitmapHeight = fontHeight;
   /*
   Serial.print("Length:");
