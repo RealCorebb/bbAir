@@ -14,6 +14,7 @@
 #include <U8g2_for_Adafruit_GFX.h>
 #include <LittleFS.h>
 #include "Ticker.h"
+#include <base64.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -174,7 +175,7 @@ void setup() {
   setupLED();
   //WiFi
 
-  //pumpText("你好");
+  pumpText("123");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -305,10 +306,20 @@ void pumpText(String text){
   gfx.setCursor(0, fontHeight-1);
   gfx.println(text);
 
+/*
+  int16_t  x1, y1;
+  uint16_t w, h;
+
+  gfx.getTextBounds(text, 0, fontHeight-1, &x1, &y1, &w, &h);
+  Serial.println(x1);
+  Serial.println(y1);
+  Serial.println(w);
+  Serial.println(h);
+*/
   // Convert bitmap to 0/1 array
    
   for (int y = 0; y < bitmapHeight; y++) {
-    if(y > 1 && y < 7){
+    //if(y > 1 && y < 7){
 
       pumpNums = 0;
       for (int x = 0; x < bitmapWidth; x++) {
@@ -317,19 +328,19 @@ void pumpText(String text){
           pumpNums += 1;
         }
       }
-
-      for (int x = 0; x < bitmapWidth; x++) {
-        int pixel = canvas.getPixel(x, y);
-        if (pixel == 1) {
-          bitmap[y * bitmapWidth + x] = 1;
-          //Serial.print("⬜");
-          onPump(x,multiply[pumpNums - 1]);
+      if(pumpNums > 0){
+        for (int x = 0; x < bitmapWidth; x++) {
+          int pixel = canvas.getPixel(x, y);
+          if (pixel == 1) {
+            bitmap[y * bitmapWidth + x] = 1;
+            //Serial.print("⬜");
+            onPump(x,multiply[pumpNums - 1]);
+          }
+        //else Serial.print("⬛");
         }
-      //else Serial.print("⬛");
+        delay(lineTime);
       }
-      delay(lineTime);
-      
-    }    
+    //}    
     
     //Serial.println("");
   }

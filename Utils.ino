@@ -59,11 +59,9 @@ void initConfig() {
     textObject["type"] = "text";
     textObject["data"] = "Hello";
 
-    JsonObject shapeObject = schedule.createNestedObject();
-    shapeObject["type"] = "shape";
-    JsonArray shapeData = shapeObject.createNestedArray("data");
-    shapeData.add(559240);
-    shapeData.add(279620);
+    JsonObject bitmapObject = schedule.createNestedObject();
+    bitmapObject["type"] = "bitmap";
+    textObject["data"] = "Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAA////////AAAAAAAA////AAAAAAAA////AAAAAAAA////////AAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
   }
   if (!doc.containsKey("valveOffsets")) {
     JsonArray valveOffsets = doc.createNestedArray("valveOffsets");
