@@ -15,6 +15,7 @@
 #include <WebSerial.h>
 #include <LittleFS.h>
 #include "Ticker.h"
+#include <base64.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -26,6 +27,7 @@ Preferences preferences;
 TaskHandle_t SecondCoreTask;
 
 DynamicJsonDocument doc(1024);
+JsonArray schedule;
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -175,7 +177,7 @@ void setup() {
   setupLED();
   //WiFi
 
-  //pumpText("你好");
+  pumpText("World");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -278,10 +280,24 @@ void pumpOneByOne(int time = bubbleTime){
 }
 
 void pumpText(String text){
-  int fontWidth = 4; // width of each character in the font
+  int fontWidth = 4; // width of each character in the font   //4 is ASCII    8 is Chinese
   int fontHeight = 8; // height of each character in the font
 
-  int bitmapWidth = text.length() * fontWidth;
+  int customLength = 0;
+  for (int i = 0; i < text.length(); i++) {
+    if ((text[i] & 0xC0) != 0x80) {
+      // Increment the count for the first byte of a UTF-8 character
+      customLength++;
+      
+      if ((text[i] & 0xE0) == 0xE0) {
+        // If the byte starts with '1110', it's a 3-byte UTF-8 character (like Chinese)
+        // Increment the count again to treat it as double the length of an ASCII character
+        customLength++;
+      }
+    }
+  }
+
+  int bitmapWidth = customLength * fontWidth;
   int bitmapHeight = fontHeight;
   /*
   Serial.print("Length:");
@@ -302,10 +318,20 @@ void pumpText(String text){
   gfx.setCursor(0, fontHeight-1);
   gfx.println(text);
 
+/*
+  int16_t  x1, y1;
+  uint16_t w, h;
+
+  gfx.getTextBounds(text, 0, fontHeight-1, &x1, &y1, &w, &h);
+  Serial.println(x1);
+  Serial.println(y1);
+  Serial.println(w);
+  Serial.println(h);
+*/
   // Convert bitmap to 0/1 array
    
   for (int y = 0; y < bitmapHeight; y++) {
-    if(y > 1 && y < 7){
+    //if(y > 1 && y < 7){
 
       pumpNums = 0;
       for (int x = 0; x < bitmapWidth; x++) {
@@ -314,21 +340,21 @@ void pumpText(String text){
           pumpNums += 1;
         }
       }
-
-      for (int x = 0; x < bitmapWidth; x++) {
-        int pixel = canvas.getPixel(x, y);
-        if (pixel == 1) {
-          bitmap[y * bitmapWidth + x] = 1;
-          //Serial.print("⬜");
-          onPump(x,multiply[pumpNums - 1]);
+      if(pumpNums > 0){
+        for (int x = 0; x < bitmapWidth; x++) {
+          int pixel = canvas.getPixel(x, y);
+          if (pixel == 1) {
+            bitmap[y * bitmapWidth + x] = 1;
+            Serial.print("⬜");
+            onPump(x,multiply[pumpNums - 1]);
+          }
+        else Serial.print("⬛");
         }
-      //else Serial.print("⬛");
+        delay(lineTime);
       }
-      delay(lineTime);
-      
-    }    
+    //}    
     
-    //Serial.println("");
+    Serial.println("");
   }
   
 
@@ -358,11 +384,28 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //textTest();
     //Serial.println(smoothedValue);
     //pumpAll();
-    pumpOneByOne();    
+    //pumpOneByOne();    
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
+
+  
+    for (JsonObject item : schedule) {
+      const char* type = item["type"];  // Get the type
+      const char* data = item["data"];  // Get the data
+      Serial.print("type: ");
+      Serial.println(type);
+      Serial.print("data: ");
+      Serial.println(data);
+      // Check the type and call the appropriate function
+      if (strcmp(type, "text") == 0) {
+        pumpText(data);
+      } else if (strcmp(type, "bitmap") == 0) {
+        //pumpBitmap(data);
+      }
+    }
+    
     delay(2000);
   }
 }
