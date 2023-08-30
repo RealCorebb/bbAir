@@ -26,6 +26,7 @@ Preferences preferences;
 TaskHandle_t SecondCoreTask;
 
 DynamicJsonDocument doc(1024);
+JsonArray schedule;
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -175,7 +176,7 @@ void setup() {
   setupLED();
   //WiFi
 
-  pumpText("123");
+  pumpText("World");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -333,16 +334,16 @@ void pumpText(String text){
           int pixel = canvas.getPixel(x, y);
           if (pixel == 1) {
             bitmap[y * bitmapWidth + x] = 1;
-            //Serial.print("⬜");
+            Serial.print("⬜");
             onPump(x,multiply[pumpNums - 1]);
           }
-        //else Serial.print("⬛");
+        else Serial.print("⬛");
         }
         delay(lineTime);
       }
     //}    
     
-    //Serial.println("");
+    Serial.println("");
   }
   
 
@@ -372,11 +373,28 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //textTest();
     //Serial.println(smoothedValue);
     //pumpAll();
-    pumpOneByOne();    
+    //pumpOneByOne();    
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
+
+  
+    for (JsonObject item : schedule) {
+      const char* type = item["type"];  // Get the type
+      const char* data = item["data"];  // Get the data
+      Serial.print("type: ");
+      Serial.println(type);
+      Serial.print("data: ");
+      Serial.println(data);
+      // Check the type and call the appropriate function
+      if (strcmp(type, "text") == 0) {
+        pumpText(data);
+      } else if (strcmp(type, "bitmap") == 0) {
+        //pumpBitmap(data);
+      }
+    }
+    
     delay(2000);
   }
 }

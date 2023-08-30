@@ -39,6 +39,7 @@ void initConfig() {
 
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
+  schedule = doc["schedule"];
   if (error) {
     Serial.println("Failed to read config file, using default configuration");
   }
