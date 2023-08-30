@@ -345,16 +345,16 @@ void pumpText(String text){
           int pixel = canvas.getPixel(x, y);
           if (pixel == 1) {
             bitmap[y * bitmapWidth + x] = 1;
-            Serial.print("⬜");
+            //Serial.print("⬜");
             onPump(x,multiply[pumpNums - 1]);
           }
-        else Serial.print("⬛");
+        //else Serial.print("⬛");
         }
         delay(lineTime);
       }
     //}    
     
-    Serial.println("");
+   // Serial.println("");
   }
   
 
@@ -390,7 +390,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
     testText += 1;
     //if (testText > 9) testText = 0;
 
-  
+    
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
       const char* data = item["data"];  // Get the data
@@ -404,6 +404,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       } else if (strcmp(type, "bitmap") == 0) {
         //pumpBitmap(data);
       }
+      delay(1000);
     }
     
     delay(2000);

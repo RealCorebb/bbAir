@@ -138,10 +138,10 @@ void stressLoop(void *pvParameters) {
     }*/
   while (true) {
     sensorValue = analogRead(Stress);
-    Serial.println(sensorValue);
-    WebSerial.println(sensorValue);
+    //Serial.println(sensorValue);
+    //WebSerial.println(sensorValue);
     smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
-    if (smoothedValue >= 220) {
+    if (smoothedValue >= 100) {
       lowTimes = 0;
       digitalWrite(OUTAir,LOW);
       //analogWrite(OUTAir,0);
@@ -223,6 +223,28 @@ void setupWeb() {
     }
   });
 
+  server.on("/updateConfig", HTTP_POST, [](AsyncWebServerRequest *request) {
+    // Read the JSON data as a string
+    if (request->hasParam("config", true)) {  
+      Serial.println("getting");
+      String updatedConfig = request->getParam("config", true)->value();
+      Serial.println("got");
+      // Open the config.json file and update its content
+      Serial.print(updatedConfig);
+      File configFile = LittleFS.open("/config.json", "w");
+      if (configFile) {
+        configFile.print(updatedConfig);
+        configFile.close();
+        
+        // Reinitialize the configuration
+        initConfig();
+        
+        request->send(200, "text/plain", "Config updated and initialized");
+      } else {
+        request->send(500, "text/plain", "Failed to update config file");
+      }
+    }
+  });
 
   server.begin();
 }
