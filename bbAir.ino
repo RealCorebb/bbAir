@@ -12,6 +12,7 @@
 #include <AsyncTCP.h>
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
+#include <WebSerial.h>
 #include <LittleFS.h>
 #include "Ticker.h"
 
@@ -137,7 +138,7 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 void setup() {
   analogWriteFrequency(500);
-  analogSetAttenuation(ADC_6db);
+  //analogSetAttenuation(ADC_0db);
   preferences.begin("bbAir", false);
   // put your setup code here, to run once:
   for (int i = 0; i < 20; i++) {
@@ -147,7 +148,7 @@ void setup() {
   pinMode(OUTAir, OUTPUT);
   Serial.begin(115200);
   Serial.println("bbAir");
-
+  WebSerial.begin(&server);
   //BLE -_,-
   BLEDevice::init("bbAir");
   BLEServer *pServer = BLEDevice::createServer();
@@ -218,13 +219,23 @@ void setup() {
   );
   
   xTaskCreatePinnedToCore(
-    ledLoop, // Task function
+    stressLoop, // Task function
     "StressTask",      // Task name
     10000,                 // Stack size (words)
     NULL,                  // Task parameters
     1,                     // Task priority
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
+  );
+
+  xTaskCreatePinnedToCore(
+    ledLoop, // Task function
+    "LedTask",      // Task name
+    10000,                 // Stack size (words)
+    NULL,                  // Task parameters
+    1,                     // Task priority
+    NULL,       // Task handle
+    1                      // Core to run the task on (1 = second core)
   );
 }
 

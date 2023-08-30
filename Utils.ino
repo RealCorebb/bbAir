@@ -140,19 +140,20 @@ void stressLoop(void *pvParameters) {
   while (true) {
     sensorValue = analogRead(Stress);
     Serial.println(sensorValue);
+    WebSerial.println(sensorValue);
     smoothedValue = alpha * smoothedValue + (1 - alpha) * sensorValue;
-    if (smoothedValue >= 3870) {
+    if (smoothedValue >= 220) {
       lowTimes = 0;
       digitalWrite(OUTAir,LOW);
       //analogWrite(OUTAir,0);
     } else {
       lowTimes++;
-      if(lowTimes >= 8){
+      if(lowTimes >= 3){
         digitalWrite(OUTAir,HIGH);
         //analogWrite(OUTAir,150);
       }
     }
-    delay(10);
+    delay(20);
   }
 }
 void setupWeb() {
