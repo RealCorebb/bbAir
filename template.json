@@ -8,11 +8,33 @@
     },
     {
       "type":"bitmap",
-      "data":"Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAA////////AAAAAAAA////AAAAAAAA////AAAAAAAA////////AAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"  
+      "data":"Qk1+AAAAAAAAAD4AAAAoAAAAEAAAABAAAAABAAEAAAAAAEAAAADDDgAAww4AAAAAAAAAAAAAAAAAAP///wD//wAAgAEAAJ/5AACf+QAAmBkAAJgZAACBgQAAgAEAAL59AACyTQAAvn0AAIABAADgBwAA//8AAP//AAD//wAA"  
     },
     {
       "type":"json",
       "data":{"url":"http://api.com","target":"[result][data][nums]"}
     }
-  ]
+  ],
+  "valveOffsets": [
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+]
 }

@@ -15,7 +15,7 @@
 #include <WebSerial.h>
 #include <LittleFS.h>
 #include "Ticker.h"
-#include <base64.h>
+#include <TridentTD_Base64.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -299,36 +299,12 @@ void pumpText(String text){
 
   int bitmapWidth = customLength * fontWidth;
   int bitmapHeight = fontHeight;
-  /*
-  Serial.print("Length:");
-  Serial.println(text.length());
-  Serial.print("Width:");
-  Serial.println(bitmapWidth);
-  Serial.print("Height:");
-  Serial.println(bitmapHeight);  */
   GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
   gfx.begin(canvas);
-  byte* bitmap = new byte[bitmapWidth * bitmapHeight]; // create bitmap array
-
-  // Clear bitmap
-  memset(bitmap, 0, bitmapWidth * bitmapHeight);
-
   // Draw text on bitmap
   gfx.setFont(pixelcorebb);
   gfx.setCursor(0, fontHeight-1);
   gfx.println(text);
-
-/*
-  int16_t  x1, y1;
-  uint16_t w, h;
-
-  gfx.getTextBounds(text, 0, fontHeight-1, &x1, &y1, &w, &h);
-  Serial.println(x1);
-  Serial.println(y1);
-  Serial.println(w);
-  Serial.println(h);
-*/
-  // Convert bitmap to 0/1 array
    
   for (int y = 0; y < bitmapHeight; y++) {
     //if(y > 1 && y < 7){
@@ -344,23 +320,61 @@ void pumpText(String text){
         for (int x = 0; x < bitmapWidth; x++) {
           int pixel = canvas.getPixel(x, y);
           if (pixel == 1) {
-            bitmap[y * bitmapWidth + x] = 1;
-            //Serial.print("⬜");
+            Serial.print("⬜");
             onPump(x,multiply[pumpNums - 1]);
           }
-        //else Serial.print("⬛");
+        else Serial.print("⬛");
         }
         delay(lineTime);
       }
     //}    
     
-   // Serial.println("");
+    Serial.println("");
   }
+}
+
+
+void pumpBitmap(String base64Data){
+  int bitmapWidth = 19;
+  int bitmapHeight = 19;
+  GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
+
+  size_t decode_len = TD_BASE64.getDecodeLength(base64Data);
+  uint8_t decoded_data[decode_len];
   
+  TD_BASE64.decode(base64Data, decoded_data);
+  const unsigned char epd_bitmap_Bitmap [] = {
+	// 'steve16, 16x16px
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe0, 0x07, 0x80, 0x01, 0xbe, 0x7d, 0xb2, 0x4d, 0xbe, 0x7d, 
+	0x80, 0x01, 0x81, 0x81, 0x98, 0x19, 0x98, 0x19, 0x9f, 0xf9, 0x9f, 0xf9, 0x80, 0x01, 0xff, 0xff
+};
+  canvas.drawBitmap(0, 0, decoded_data, 16, 16, 0xffff);
 
-  // Do something with the bitmap, e.g. send it to a server or save it to a file
+  int pumpNums = 0; // Declare and initialize pumpNums
 
-  delete[] bitmap; // free bitmap memory
+  for (int y = 0; y < bitmapHeight; y++) {
+    pumpNums = 0;
+    for (int x = 0; x < bitmapWidth; x++) {
+      int pixel = canvas.getPixel(x, y);
+      if (pixel == 1) {
+        pumpNums += 1;
+      }
+    }
+    if (pumpNums > 0) {
+      for (int x = 0; x < bitmapWidth; x++) {
+        int pixel = canvas.getPixel(x, y);
+        if (pixel == 1) {
+          Serial.print("⬜");
+          onPump(x, multiply[pumpNums - 1]);
+        } else {
+          Serial.print("⬛");
+        }
+      }
+      Serial.println("");
+      delay(lineTime);
+    }
+    
+  }
 }
 
 void textTest(){
@@ -402,7 +416,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       if (strcmp(type, "text") == 0) {
         pumpText(data);
       } else if (strcmp(type, "bitmap") == 0) {
-        //pumpBitmap(data);
+        pumpBitmap(data);
       }
       delay(1000);
     }
