@@ -16,6 +16,8 @@
 #include <LittleFS.h>
 #include "Ticker.h"
 #include <TridentTD_Base64.h>
+#include <WiFiUdp.h>
+#include <NTPClient.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -28,6 +30,12 @@ TaskHandle_t SecondCoreTask;
 
 DynamicJsonDocument doc(1024);
 JsonArray schedule;
+
+const char* ntpServerName = "pool.ntp.org";
+int timeZone = 0;  // Initialize with a default timezone offset in hours
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServerName, timeZone * 3600, 60000);
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -175,6 +183,7 @@ void setup() {
   setupWifi();
   setupWeb();
   setupLED();
+  timeClient.begin();
   //WiFi
 
   pumpText("World");
@@ -417,6 +426,14 @@ void SecondCoreTaskFunction(void *pvParameters) {
         pumpText(data);
       } else if (strcmp(type, "bitmap") == 0) {
         pumpBitmap(data);
+      }
+      else if (strcmp(type, "time") == 0){
+        timeClient.update();
+        int hours = timeClient.getHours();
+        int minutes = timeClient.getMinutes();       
+        // Format the time as "hours:minutes"
+        String formattedTime = String(hours) + ":" + (minutes < 10 ? "0" : "") + String(minutes);
+        pumpText(formattedTime);
       }
       delay(1000);
     }
