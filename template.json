@@ -1,6 +1,9 @@
 {
   "pump":true,
   "led":true,
+  "ledMode":"rainbow",
+  "staticColor":"0x89CFF0",
+  "lineTime": "500",
   "schedule":[
     {
       "type":"text",
@@ -8,7 +11,7 @@
     },
     {
       "type":"bitmap",
-      "data":"Qk1+AAAAAAAAAD4AAAAoAAAAEAAAABAAAAABAAEAAAAAAEAAAADDDgAAww4AAAAAAAAAAAAAAAAAAP///wD//wAAgAEAAJ/5AACf+QAAmBkAAJgZAACBgQAAgAEAAL59AACyTQAAvn0AAIABAADgBwAA//8AAP//AAD//wAA"  
+      "data":"AAAAAAAAAAAABxwACKIAEEEAIACAIACAIACAIACAEAEACAIABAQAAggAARAAAKAAAEAAAAAAAAAA"  
     },
     {
       "type":"json",

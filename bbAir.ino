@@ -186,7 +186,6 @@ void setup() {
   timeClient.begin();
   //WiFi
 
-  pumpText("World");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -352,12 +351,7 @@ void pumpBitmap(String base64Data){
   uint8_t decoded_data[decode_len];
   
   TD_BASE64.decode(base64Data, decoded_data);
-  const unsigned char epd_bitmap_Bitmap [] = {
-	// 'steve16, 16x16px
-	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe0, 0x07, 0x80, 0x01, 0xbe, 0x7d, 0xb2, 0x4d, 0xbe, 0x7d, 
-	0x80, 0x01, 0x81, 0x81, 0x98, 0x19, 0x98, 0x19, 0x9f, 0xf9, 0x9f, 0xf9, 0x80, 0x01, 0xff, 0xff
-};
-  canvas.drawBitmap(0, 0, decoded_data, 16, 16, 0xffff);
+  canvas.drawBitmap(0, 0, decoded_data, 19, 19, 0xffff);
 
   int pumpNums = 0; // Declare and initialize pumpNums
 
