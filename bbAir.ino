@@ -12,7 +12,6 @@
 #include <AsyncTCP.h>
 #include <Adafruit_GFX.h>
 #include <U8g2_for_Adafruit_GFX.h>
-#include <WebSerial.h>
 #include <LittleFS.h>
 #include "Ticker.h"
 #include <TridentTD_Base64.h>
@@ -86,7 +85,9 @@ int pumpNums = 1;
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
 uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-uint8_t ledDim[20] = {255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255};
+uint8_t ledDim[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t curCounts[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 Ticker valveTickers[20];
 Ticker ledTickers[20];
 
@@ -158,7 +159,6 @@ void setup() {
   pinMode(OUTAir, OUTPUT);
   Serial.begin(115200);
   Serial.println("bbAir");
-  WebSerial.begin(&server);
   //BLE -_,-
   BLEDevice::init("bbAir");
   BLEServer *pServer = BLEDevice::createServer();
@@ -287,6 +287,7 @@ void pumpOneByOne(int time = bubbleTime){
   }
 }
 
+
 void pumpText(String text){
   int fontWidth = 4; // width of each character in the font   //4 is ASCII    8 is Chinese
   int fontHeight = 8; // height of each character in the font
@@ -367,13 +368,13 @@ void pumpBitmap(String base64Data){
       for (int x = 0; x < bitmapWidth; x++) {
         int pixel = canvas.getPixel(x, y);
         if (pixel == 1) {
-          Serial.print("⬜");
+          //Serial.print("⬜");
           onPump(x, multiply[pumpNums - 1]);
         } else {
-          Serial.print("⬛");
+          //Serial.print("⬛");
         }
       }
-      Serial.println("");
+      //Serial.println("");
       delay(lineTime);
     }
     
@@ -395,11 +396,47 @@ void textTest(){
 }
 
 int testText = 0;
+float multiNum = 1;
+int mms = 10000;
 void SecondCoreTaskFunction(void *pvParameters) {
   //pumpAll();
   while (true) {
+
+    /*
+    for(int i = 0;i<4;i++){
+      onPump(3);
+      if
+      delay(lineTime);
+    }*/
+    
+    
+    mms = 13000;
+    for(int i = 0;i<4;i++){
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms + 1000);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+    }
+    delay(5000);
+    //delay(int(doc["valveOffsets"][1].as<int>()));
     //textTest();
     //Serial.println(smoothedValue);
+    /*
     pumpOneByOne();    
     delay(2000);
     pumpAll();
@@ -408,6 +445,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
     testText += 1;
     //if (testText > 9) testText = 0;
     delay(2000);
+    //pumpSingle();
     
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
@@ -434,5 +472,6 @@ void SecondCoreTaskFunction(void *pvParameters) {
     }
     
     delay(2000);
+    */
   }
 }
