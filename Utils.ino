@@ -1,6 +1,9 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
 
+String ledMode = "rainbow";
+uint32_t staticColor = 0x89CFF0;
+
 void saveJson() {
   File configFile = LittleFS.open("/config.json", "w");
   if (serializeJson(doc, configFile) == 0) {
@@ -40,6 +43,11 @@ void initConfig() {
   // Deserialize the JSON document
   DeserializationError error = deserializeJson(doc, configFile);
   schedule = doc["schedule"];
+  ledMode = doc["ledMode"].as<String>();
+  staticColor = strtoul(doc["staticColor"].as<String>().c_str(), NULL, 16);
+  lineTime = doc["lineTime"];
+
+  
   if (error) {
     Serial.println("Failed to read config file, using default configuration");
   }
@@ -228,9 +236,6 @@ void setupWeb() {
     if (request->hasParam("config", true)) {  
       Serial.println("getting");
       String updatedConfig = request->getParam("config", true)->value();
-      Serial.println("got");
-      // Open the config.json file and update its content
-      Serial.print(updatedConfig);
       File configFile = LittleFS.open("/config.json", "w");
       if (configFile) {
         configFile.print(updatedConfig);
@@ -251,7 +256,6 @@ void setupWeb() {
 
 
 //LED
-uint32_t staticColor = 0x89CFF0;
 
 void rainbowLoop() {
   static float startIndex = 0;

@@ -1,6 +1,9 @@
 {
   "pump":true,
   "led":true,
+  "ledMode":"rainbow",
+  "staticColor":"0x89CFF0",
+  "lineTime": "500",
   "schedule":[
     {
       "type":"text",
@@ -8,11 +11,33 @@
     },
     {
       "type":"bitmap",
-      "data":"Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////////////////////////////////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAA////////AAAAAAAA////AAAAAAAA////AAAAAAAA////////AAAA////////AAAA////////////////////AAAAAAAA////////////////////AAAA////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"  
+      "data":"AAAAAAAAAAAABxwACKIAEEEAIACAIACAIACAIACAEAEACAIABAQAAggAARAAAKAAAEAAAAAAAAAA"  
     },
     {
       "type":"json",
       "data":{"url":"http://api.com","target":"[result][data][nums]"}
     }
-  ]
+  ],
+  "valveOffsets": [
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+]
 }
