@@ -71,7 +71,7 @@ float smoothedValue = 0;
 
 
 int bubbleTime = 0;
-int lineTime = 250;
+int lineTime = 2500;
 int pumpTime = 100;
 int pumpNums = 1;
 
@@ -176,8 +176,6 @@ void setup() {
   setupWeb();
   setupLED();
   //WiFi
-
-  pumpText("World");
   //Debugging OTA -_,-
   ArduinoOTA
     .onStart([]() {
@@ -219,7 +217,7 @@ void setup() {
     &SecondCoreTask,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );
-  
+  /*
   xTaskCreatePinnedToCore(
     stressLoop, // Task function
     "StressTask",      // Task name
@@ -228,8 +226,8 @@ void setup() {
     1,                     // Task priority
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
-  );
-
+  );*/
+  /*
   xTaskCreatePinnedToCore(
     ledLoop, // Task function
     "LedTask",      // Task name
@@ -238,7 +236,7 @@ void setup() {
     1,                     // Task priority
     NULL,       // Task handle
     1                      // Core to run the task on (1 = second core)
-  );
+  );*/
 }
 
 
@@ -383,13 +381,14 @@ void SecondCoreTaskFunction(void *pvParameters) {
   while (true) {
     //textTest();
     //Serial.println(smoothedValue);
-    //pumpAll();
-    //pumpOneByOne();    
+    pumpOneByOne();    
+    delay(2000);
+    pumpAll();
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
-
+    delay(2000);
     
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
