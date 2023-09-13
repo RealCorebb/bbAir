@@ -86,7 +86,11 @@ uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT1
 uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 uint8_t ledDim[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+//For better result in the situation that has multiple bubbles on the same col in a short time.
 uint8_t curCounts[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t fadeBubbles[10] = {-2,-3,-3,-3,-3,-3,-3,-3,-3,-3};
+unsigned long lastPumpTime[20] = {0};
 
 Ticker valveTickers[20];
 Ticker ledTickers[20];
@@ -251,11 +255,23 @@ void setup() {
 
 
 /////////////////////////////////
-
+int lineTime = 500;
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
+  unsigned long currentTime = millis();
+
+  // Check if enough time has passed since the last pump
+  if (currentTime - lastPumpTime[no] <= (lineTime + lineTime * 0.1)) {
+    curCounts[no]++; // Increment count if within lineTime
+  } else {
+    curCounts[no] = 0; // Reset count if longer than lineTime
+  }
+
+  // Update the last pump time
+  lastPumpTime[no] = currentTime;
+
   digitalWrite(valvePins[no],HIGH); 
   ledDim[no] = 255;
-  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>()), offPump, no);
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>() + doc["fadeBubbles"][curCounts[no]].as<int>()), offPump, no);
   ledTickers[no].once_ms(500,offLed,no);
 }
 
