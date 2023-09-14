@@ -83,13 +83,11 @@ int pumpTime = 100;
 int pumpNums = 1;
 
 uint8_t valvePins[20] = {OUT1,OUT2,OUT3,OUT4,OUT5,OUT6,OUT7,OUT8,OUT9,OUT10,OUT11,OUT12,OUT13,OUT14,OUT15,OUT16,OUT17,OUT18,OUT19,OUT20};
-uint8_t valveOffsets[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 float  multiply[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 uint8_t ledDim[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 //For better result in the situation that has multiple bubbles on the same col in a short time.
 uint8_t curCounts[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-uint8_t fadeBubbles[10] = {-2,-3,-3,-3,-3,-3,-3,-3,-3,-3};
 unsigned long lastPumpTime[20] = {0};
 
 Ticker valveTickers[20];
@@ -255,21 +253,23 @@ void setup() {
 
 
 /////////////////////////////////
+int lineTime = 500;
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
-  unsigned long currentTime = millis() + (lineTime + lineTime * 0.5);
+  unsigned long currentTime = millis();
 
   // Check if enough time has passed since the last pump
-  if (currentTime - lastPumpTime[no] <= (lineTime + lineTime * 0.5)) {
+  if (currentTime - lastPumpTime[no] <= (lineTime + lineTime * 0.1)) {
     curCounts[no]++; // Increment count if within lineTime
   } else {
     curCounts[no] = 0; // Reset count if longer than lineTime
   }
+
   // Update the last pump time
   lastPumpTime[no] = currentTime;
 
   digitalWrite(valvePins[no],HIGH); 
   ledDim[no] = 255;
-  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][no].as<int>() + doc["fadeBubbles"][curCounts[no]].as<int>()), offPump, no);
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][curCounts[no]][no].as<int>()), offPump, no);
   ledTickers[no].once_ms(500,offLed,no);
 }
 
@@ -410,6 +410,8 @@ void textTest(){
 }
 
 int testText = 0;
+float multiNum = 1;
+int mms = 10000;
 void SecondCoreTaskFunction(void *pvParameters) {
   //pumpAll();
   while (true) {
@@ -421,18 +423,34 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(lineTime);
     }*/
     
-    /*
+    
+    mms = 13000;
     for(int i = 0;i<4;i++){
-      onPump(15);
-      onPump(3);
-      onPump(9);
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms + 1000);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
+      delay(lineTime);
+
+      digitalWrite(valvePins[1],HIGH);
+      delayMicroseconds(mms);
+      digitalWrite(valvePins[1],LOW);
       delay(lineTime);
     }
-    delay(5000);*/
+    delay(5000);
     //delay(int(doc["valveOffsets"][1].as<int>()));
     //textTest();
     //Serial.println(smoothedValue);
-    
+    /*
     pumpOneByOne();    
     delay(2000);
     pumpAll();
@@ -464,10 +482,10 @@ void SecondCoreTaskFunction(void *pvParameters) {
         String formattedTime = String(hours) + ":" + (minutes < 10 ? "0" : "") + String(minutes);
         pumpText(formattedTime);
       }
-      delay(2000);
+      delay(1000);
     }
     
     delay(2000);
-    
+    */
   }
 }
