@@ -27,7 +27,7 @@ AsyncWebServer server(80);
 Preferences preferences;
 TaskHandle_t SecondCoreTask;
 
-DynamicJsonDocument doc(1024);
+DynamicJsonDocument doc(4096);
 JsonArray schedule;
 
 const char* ntpServerName = "pool.ntp.org";
@@ -253,9 +253,8 @@ void setup() {
 
 
 /////////////////////////////////
-int lineTime = 500;
 void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i am so smart thanks to chatGPT.
-  unsigned long currentTime = millis();
+  unsigned long currentTime = millis() + (lineTime + lineTime * 0.2);
 
   // Check if enough time has passed since the last pump
   if (currentTime - lastPumpTime[no] <= (lineTime + lineTime * 0.1)) {
@@ -264,6 +263,10 @@ void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i a
     curCounts[no] = 0; // Reset count if longer than lineTime
   }
 
+  Serial.print(curCounts[no]);
+  Serial.print(" ");
+  Serial.println(no);
+  Serial.println( doc["valveOffsets"][curCounts[no]][no].as<int>());
   // Update the last pump time
   lastPumpTime[no] = currentTime;
 
@@ -411,7 +414,6 @@ void textTest(){
 
 int testText = 0;
 float multiNum = 1;
-int mms = 10000;
 void SecondCoreTaskFunction(void *pvParameters) {
   //pumpAll();
   while (true) {
@@ -423,27 +425,8 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(lineTime);
     }*/
     
-    
-    mms = 13000;
     for(int i = 0;i<4;i++){
-      digitalWrite(valvePins[1],HIGH);
-      delayMicroseconds(mms + 1000);
-      digitalWrite(valvePins[1],LOW);
-      delay(lineTime);
-
-      digitalWrite(valvePins[1],HIGH);
-      delayMicroseconds(mms);
-      digitalWrite(valvePins[1],LOW);
-      delay(lineTime);
-
-      digitalWrite(valvePins[1],HIGH);
-      delayMicroseconds(mms);
-      digitalWrite(valvePins[1],LOW);
-      delay(lineTime);
-
-      digitalWrite(valvePins[1],HIGH);
-      delayMicroseconds(mms);
-      digitalWrite(valvePins[1],LOW);
+      onPump(3);
       delay(lineTime);
     }
     delay(5000);
@@ -482,7 +465,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
         String formattedTime = String(hours) + ":" + (minutes < 10 ? "0" : "") + String(minutes);
         pumpText(formattedTime);
       }
-      delay(1000);
+      delay(2000);
     }
     
     delay(2000);

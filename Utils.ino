@@ -50,6 +50,7 @@ void initConfig() {
   
   if (error) {
     Serial.println("Failed to read config file, using default configuration");
+    Serial.println(error.c_str());
   }
 
   configFile.close();
@@ -236,6 +237,7 @@ void setupWeb() {
     if (request->hasParam("config", true)) {  
       Serial.println("getting");
       String updatedConfig = request->getParam("config", true)->value();
+      Serial.println(updatedConfig);
       File configFile = LittleFS.open("/config.json", "w");
       if (configFile) {
         configFile.print(updatedConfig);
