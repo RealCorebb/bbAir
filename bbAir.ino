@@ -239,7 +239,7 @@ void setup() {
     NULL,       // Task handle
     0                      // Core to run the task on (1 = second core)
   );*/
-  /*
+  
   xTaskCreatePinnedToCore(
     ledLoop, // Task function
     "LedTask",      // Task name
@@ -248,7 +248,7 @@ void setup() {
     1,                     // Task priority
     NULL,       // Task handle
     1                      // Core to run the task on (1 = second core)
-  );*/
+  );
 }
 
 
@@ -263,16 +263,12 @@ void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i a
     curCounts[no] = 0; // Reset count if longer than lineTime
   }
 
-  Serial.print(curCounts[no]);
-  Serial.print(" ");
-  Serial.println(no);
-  Serial.println( doc["valveOffsets"][curCounts[no]][no].as<int>());
   // Update the last pump time
   lastPumpTime[no] = currentTime;
 
   digitalWrite(valvePins[no],HIGH); 
   ledDim[no] = 255;
-  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][curCounts[no]][no].as<int>()), offPump, no);
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][0][no].as<int>()), offPump, no);  //curCounts[no]
   ledTickers[no].once_ms(500,offLed,no);
 }
 
@@ -424,26 +420,20 @@ void SecondCoreTaskFunction(void *pvParameters) {
       if
       delay(lineTime);
     }*/
-    
-    for(int i = 0;i<4;i++){
-      onPump(3);
-      delay(lineTime);
-    }
-    delay(5000);
     //delay(int(doc["valveOffsets"][1].as<int>()));
     //textTest();
     //Serial.println(smoothedValue);
-    /*
+    
     pumpOneByOne();    
-    delay(2000);
+    delay(8000);
     pumpAll();
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
-    delay(2000);
+    delay(8000);
     //pumpSingle();
-    
+    /*
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
       const char* data = item["data"];  // Get the data
@@ -468,7 +458,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(2000);
     }
     
-    delay(2000);
-    */
+    delay(2000);*/
+    
   }
 }
