@@ -90,6 +90,7 @@ uint8_t ledDim[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint8_t curCounts[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 unsigned long lastPumpTime[20] = {0};
 
+Ticker valveDelayTickers[20];
 Ticker valveTickers[20];
 Ticker ledTickers[20];
 
@@ -265,11 +266,17 @@ void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i a
 
   // Update the last pump time
   lastPumpTime[no] = currentTime;
+  int delayTime = doc["valveDelays"][no].as<int>();
 
-  digitalWrite(valvePins[no],HIGH); 
+  valveDelayTickers[no].once_ms(delayTime,onPumpFun,no);
+
+  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][0][no].as<int>()) + delayTime, offPump, no);  //curCounts[no]
+  ledTickers[no].once_ms(500 + delayTime,offLed,no);
+}
+
+void onPumpFun(int no){
+  digitalWrite(valvePins[no],HIGH);
   ledDim[no] = 255;
-  valveTickers[no].once_ms(int(multi * doc["valveOffsets"][0][no].as<int>()), offPump, no);  //curCounts[no]
-  ledTickers[no].once_ms(500,offLed,no);
 }
 
 void offPump(int no){
