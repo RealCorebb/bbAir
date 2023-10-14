@@ -440,10 +440,23 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //if (testText > 9) testText = 0;
     delay(8000);
     //pumpSingle();
-    /*
+    
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
       const char* data = item["data"];  // Get the data
+      if (item.containsKey("led")) {
+        if(strcmp(item["led"], "rainbow") == 0){
+          ledMode = "rainbow";
+        }
+        else{
+          ledMode = "static";
+          staticColor = strtoul(item["led"].as<String>().c_str(), NULL, 16);
+        }
+      }
+      else{
+        ledMode = doc["ledMode"].as<String>();
+        staticColor = strtoul(doc["staticColor"].as<String>().c_str(), NULL, 16);
+      }
       Serial.print("type: ");
       Serial.println(type);
       Serial.print("data: ");
@@ -465,7 +478,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(2000);
     }
     
-    delay(2000);*/
+    delay(2000);
     
   }
 }

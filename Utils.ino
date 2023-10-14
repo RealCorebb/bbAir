@@ -122,8 +122,12 @@ int lowTimes = 0;
 void ledLoop(void *pvParameters){
   while (true) {
     //Serial.println("led");
-    rainbowLoop();
-    //staticLoop();
+    if(ledMode == "rainbow"){
+      rainbowLoop();
+    }
+    else if(ledMode == "static"){
+      staticLoop();      
+    }
   }
 }
 
