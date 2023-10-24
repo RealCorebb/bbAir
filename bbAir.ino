@@ -271,7 +271,7 @@ void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i a
   valveDelayTickers[no].once_ms(delayTime,onPumpFun,no);
 
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][0][no].as<int>()) + delayTime, offPump, no);  //curCounts[no]
-  ledTickers[no].once_ms(500 + delayTime,offLed,no);
+  ledTickers[no].once_ms(1000 + delayTime,offLed,no);
 }
 
 void onPumpFun(int no){
@@ -432,15 +432,15 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //Serial.println(smoothedValue);
     
     pumpOneByOne();    
-    delay(8000);
+    delay(2000);
     pumpAll();
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
-    delay(8000);
+    delay(2000);
     //pumpSingle();
-    /*
+    
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
       const char* data = item["data"];  // Get the data
@@ -465,7 +465,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(2000);
     }
     
-    delay(2000);*/
+    delay(2000);
     
   }
 }
