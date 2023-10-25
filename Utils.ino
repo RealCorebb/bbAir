@@ -1,9 +1,6 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 //Create a ArduinoJson object with dynamic memory allocation
 
-String ledMode = "rainbow";
-uint32_t staticColor = 0x89CFF0;
-
 void saveJson() {
   File configFile = LittleFS.open("/config.json", "w");
   if (serializeJson(doc, configFile) == 0) {

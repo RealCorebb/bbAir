@@ -36,6 +36,9 @@ int timeZone = 0;  // Initialize with a default timezone offset in hours
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, ntpServerName, timeZone * 3600, 60000);
 
+String ledMode = "rainbow";
+uint32_t staticColor = 0x89CFF0;
+
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define maxPumps 19
@@ -271,7 +274,7 @@ void onPump(int no,float multi = 1){  //just like JavaScript's setTimeout(), i a
   valveDelayTickers[no].once_ms(delayTime,onPumpFun,no);
 
   valveTickers[no].once_ms(int(multi * doc["valveOffsets"][0][no].as<int>()) + delayTime, offPump, no);  //curCounts[no]
-  ledTickers[no].once_ms(1000 + delayTime,offLed,no);
+  ledTickers[no].once_ms(3000 + delayTime,offLed,no);
 }
 
 void onPumpFun(int no){
@@ -326,13 +329,17 @@ void pumpText(String text){
     }
   }
 
-  int bitmapWidth = customLength * fontWidth;
+  int bitmapWidth = maxPumps;
   int bitmapHeight = fontHeight;
   GFXcanvas1 canvas(bitmapWidth, bitmapHeight);
   gfx.begin(canvas);
   // Draw text on bitmap
+  int fw;
   gfx.setFont(pixelcorebb);
-  gfx.setCursor(0, fontHeight-1);
+  fw = gfx.getUTF8Width(text.c_str());
+  Serial.print("Width: ");
+  Serial.println(fw);
+  gfx.setCursor(int((maxPumps - fw) / 2), fontHeight-1);
   gfx.println(text);
    
   for (int y = 0; y < bitmapHeight; y++) {
@@ -349,16 +356,18 @@ void pumpText(String text){
         for (int x = 0; x < bitmapWidth; x++) {
           int pixel = canvas.getPixel(x, y);
           if (pixel == 1) {
-            Serial.print("⬜");
+            //Serial.print("⬜");
             onPump(x,multiply[pumpNums - 1]);
           }
-        else Serial.print("⬛");
+          else {
+            //Serial.print("⬛");
+          }
         }
         delay(lineTime);
       }
     //}    
     
-    Serial.println("");
+    //Serial.println("");
   }
 }
 
@@ -431,14 +440,14 @@ void SecondCoreTaskFunction(void *pvParameters) {
     //textTest();
     //Serial.println(smoothedValue);
     
-    pumpOneByOne();    
-    delay(2000);
-    pumpAll();
+    //pumpOneByOne();    
+    //delay(8000);
+    //pumpAll();
     //Serial.println("pump");
     //pumpText(String(testText));
     testText += 1;
     //if (testText > 9) testText = 0;
-    delay(2000);
+    //delay(8000);
     //pumpSingle();
     
     for (JsonObject item : schedule) {
@@ -478,7 +487,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       delay(2000);
     }
     
-    delay(2000);
+    delay(8000);
     
   }
 }
