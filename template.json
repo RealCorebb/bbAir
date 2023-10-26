@@ -16,7 +16,7 @@
     },
     {
       "type":"json",
-      "data":{"url":"http://api.com","target":"[result][data][nums]"}
+      "data":{"url":"https://api.bilibili.com/x/relation/stat?vmid=625268","target":"[data][follower]"}
     }
   ],
   "valveDelays":[5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],

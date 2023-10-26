@@ -508,7 +508,13 @@ void SecondCoreTaskFunction(void *pvParameters) {
               } else {
                 // Use the "target" string to navigate to the desired value in the JSON document.
                 // For example, if "target" is "[result][data][nums]", you can access it as follows:
-                String extractedValue = doc[target].as<String>();
+                JsonObject currentObj = doc.as<JsonObject>();
+                char* key = strtok(const_cast<char*>(target), ".");
+                while (key != nullptr) {
+                  currentObj = doc[key];
+                  key = strtok(nullptr, ".");
+                }
+                String extractedValue = currentObj.as<String>();
 
                 // Now you have the extracted value, and you can do whatever you need with it.
                 Serial.print("Extracted Value: ");
