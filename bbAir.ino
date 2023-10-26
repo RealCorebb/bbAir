@@ -17,6 +17,7 @@
 #include <TridentTD_Base64.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
+#include <HTTPClient.h>
 
 U8G2_FOR_ADAFRUIT_GFX gfx;
 #include "pixelcorebb.h"
@@ -484,6 +485,45 @@ void SecondCoreTaskFunction(void *pvParameters) {
         String formattedTime = String(hours) + ":" + (minutes < 10 ? "0" : "") + String(minutes);
         pumpText(formattedTime);
       }
+      else if (strcmp(type, "json") == 0) {
+          const char* url = item["data"]["url"];  // Get the URL
+          const char* target = item["data"]["target"];  // Get the JSON target field
+
+          // Perform an HTTP request to the URL
+          HTTPClient http;
+          http.begin(url);
+
+          int httpCode = http.GET();
+          if (httpCode > 0) {
+            if (httpCode == HTTP_CODE_OK) {
+              String response = http.getString();
+
+              // Parse the JSON response
+              DynamicJsonDocument doc(1024);  // Adjust the size as needed
+              DeserializationError error = deserializeJson(doc, response);
+
+              if (error) {
+                Serial.print("Failed to parse JSON: ");
+                Serial.println(error.c_str());
+              } else {
+                // Use the "target" string to navigate to the desired value in the JSON document.
+                // For example, if "target" is "[result][data][nums]", you can access it as follows:
+                String extractedValue = doc[target].as<String>();
+
+                // Now you have the extracted value, and you can do whatever you need with it.
+                Serial.print("Extracted Value: ");
+                Serial.println(extractedValue);
+              }
+            } else {
+              Serial.print("HTTP request failed with error code: ");
+              Serial.println(httpCode);
+            }
+          } else {
+            Serial.println("HTTP request failed");
+          }
+
+          http.end();  // Close the HTTP connection
+        }
       delay(2000);
     }
     
