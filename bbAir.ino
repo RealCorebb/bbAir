@@ -487,7 +487,7 @@ void SecondCoreTaskFunction(void *pvParameters) {
       }
       else if (strcmp(type, "json") == 0) {
           const char* url = item["data"]["url"];  // Get the URL
-          const char* target = item["data"]["target"];  // Get the JSON target field
+          String target = item["data"]["target"];  // Get the JSON target field
 
           // Perform an HTTP request to the URL
           HTTPClient http;
@@ -508,17 +508,32 @@ void SecondCoreTaskFunction(void *pvParameters) {
               } else {
                 // Use the "target" string to navigate to the desired value in the JSON document.
                 // For example, if "target" is "[result][data][nums]", you can access it as follows:
-                JsonObject currentObj = doc.as<JsonObject>();
-                char* key = strtok(const_cast<char*>(target), ".");
-                while (key != nullptr) {
-                  currentObj = doc[key];
-                  key = strtok(nullptr, ".");
-                }
-                String extractedValue = currentObj.as<String>();
+                JsonVariant nested = doc;
 
+                // Split the key into components
+                String delimiter = ".";
+                int pos = 0;
+                String component;
+
+                while (!target.isEmpty()) {
+                    pos = target.indexOf(delimiter);
+                    if (pos == -1) {
+                        component = target;
+                        target = "";  // Clear the key to exit the loop
+                    } else {
+                        component = target.substring(0, pos);
+                        target = target.substring(pos + delimiter.length());
+                    }
+                    nested = nested[component];
+                }
+                
+                String extractedValue = nested.as<String>();
+                
                 // Now you have the extracted value, and you can do whatever you need with it.
-                Serial.print("Extracted Value: ");
-                Serial.println(extractedValue);
+                //Serial.print("Extracted Value: ");
+                //Serial.println(extractedValue);
+
+                pumpText(extractedValue);
               }
             } else {
               Serial.print("HTTP request failed with error code: ");
