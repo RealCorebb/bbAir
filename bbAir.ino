@@ -357,18 +357,18 @@ void pumpText(String text){
         for (int x = 0; x < bitmapWidth; x++) {
           int pixel = canvas.getPixel(x, y);
           if (pixel == 1) {
-            //Serial.print("⬜");
+            Serial.print("⬜");
             onPump(x,multiply[pumpNums - 1]);
           }
           else {
-            //Serial.print("⬛");
+            Serial.print("⬛");
           }
         }
         delay(lineTime);
       }
     //}    
     
-    //Serial.println("");
+    Serial.println("");
   }
 }
 
@@ -394,19 +394,19 @@ void pumpBitmap(String base64Data){
         pumpNums += 1;
       }
     }
-    if (pumpNums > 0) {
+    //if (pumpNums > 0) {
       for (int x = 0; x < bitmapWidth; x++) {
         int pixel = canvas.getPixel(x, y);
         if (pixel == 1) {
-          Serial.print("⬜");
+          //Serial.print("⬜");
           onPump(x, multiply[pumpNums - 1]);
         } else {
-          Serial.print("⬛");
+          //Serial.print("⬛");
         }
       }
-      Serial.println("");
+      //Serial.println("");
       delay(lineTime);
-    }
+    //}
     
   }
 }
@@ -545,10 +545,8 @@ void SecondCoreTaskFunction(void *pvParameters) {
 
           http.end();  // Close the HTTP connection
         }
-      delay(2000);
+      delay(3000);
     }
-    
-    delay(8000);
     
   }
 }
