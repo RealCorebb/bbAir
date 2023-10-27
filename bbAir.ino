@@ -398,13 +398,13 @@ void pumpBitmap(String base64Data){
       for (int x = 0; x < bitmapWidth; x++) {
         int pixel = canvas.getPixel(x, y);
         if (pixel == 1) {
-          //Serial.print("⬜");
+          Serial.print("⬜");
           onPump(x, multiply[pumpNums - 1]);
         } else {
-          //Serial.print("⬛");
+          Serial.print("⬛");
         }
       }
-      //Serial.println("");
+      Serial.println("");
       delay(lineTime);
     }
     

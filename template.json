@@ -15,6 +15,16 @@
       "led": "0xFF96EF"
     },
     {
+      "type":"bitmap",
+      "data":"AAD4AAD4AAD4AAD4ICD4QBD4gAj4QBD4ICD4AAD4AAD4AAD4EED4ICD4wBj4AAf4AAD4AAD4AAD4",
+      "led": "0xFFF98A"
+    },
+    {
+      "type":"bitmap",
+      "data":"AAD4EED4ICD4ICD4EED4AAD4wB/4ICD4EED4iIj4iIj4EED4ICD4wB/4AAD4AAD4AAD4AAD4AAD4",
+      "led": "0xF7529C"
+    },
+    {
       "type":"json",
       "data":{"url":"https://api.bilibili.com/x/relation/stat?vmid=625268","target":"[data][follower]"}
     }
