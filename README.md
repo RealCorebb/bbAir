@@ -14,6 +14,6 @@
 ## 很棒的作品，爱来自bbREALM♥
 
 # 目录结构：
-**PCB** PCB的原理图、Gerber制版文件（如需访问原始工程，请点击上方的地址）  
-**CAD** 3D打印模型（STL格式）、激光切割文件（DXF格式）  
-**Arduino** 代码，在Arduino IDE下使用ESP32-S3  
+**[PCB]:** PCB的原理图、Gerber制版文件（如需访问原始工程，请点击上方的地址）  
+**[CAD]:** 3D打印模型（STL格式）、激光切割文件（DXF格式）  
+**[Arduino]:** 代码，在Arduino IDE下使用ESP32-S3  
