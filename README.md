@@ -1,6 +1,6 @@
-# bbLaser [English](https://github.com/RealCorebb/bbLaser/blob/main/README_EN.md "English")  
-![image](https://github.com/RealCorebb/bbLaser/blob/main/IMG/bbLaser.jpg?raw=true)
-## 一个用气泡组成图案、文字的显示器🫧
+# bbAir [English](https://github.com/RealCorebb/bbLaser/blob/main/README_EN.md "English")  
+![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/Cover_Final.jpg?raw=true)
+## 一个用气泡组成图案、文字的显示器◌ ◯ 〇  O ○ 
 
 
 🔗[PCB工程文件地址](https://oshwhub.com/corebb/bblaser_pro "PCB工程文件地址")  
