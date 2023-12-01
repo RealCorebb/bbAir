@@ -224,7 +224,7 @@ void setup() {
   initConfig();
   //OTA
 
-
+  
   xTaskCreatePinnedToCore(
     SecondCoreTaskFunction, // Task function
     "SecondCoreTask",      // Task name
@@ -431,26 +431,13 @@ void SecondCoreTaskFunction(void *pvParameters) {
   //pumpAll();
   while (true) {
 
-    /*
-    for(int i = 0;i<4;i++){
-      onPump(3);
-      if
-      delay(lineTime);
-    }*/
-    //delay(int(doc["valveOffsets"][1].as<int>()));
-    //textTest();
-    //Serial.println(smoothedValue);
-    
-    //pumpOneByOne();    
-    //delay(8000);
-    //pumpAll();
-    //Serial.println("pump");
-    //pumpText(String(testText));
+    /*  DEBUG TESTING 用来检查每一个电磁阀有没有正常打开关闭*/
+
+    //pumpOneByOne();
+    //delay(5000);
     testText += 1;
-    //if (testText > 9) testText = 0;
-    //delay(8000);
-    //pumpSingle();
-    
+
+    /* 按照template.json的内容显示东西 */
     for (JsonObject item : schedule) {
       const char* type = item["type"];  // Get the type
       const char* data = item["data"];  // Get the data
