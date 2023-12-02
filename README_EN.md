@@ -1,4 +1,4 @@
-# bbAir [中文](https://github.com/RealCorebb/bbLaser/blob/main/README.md "中文")  
+# bbAir [中文](https://github.com/RealCorebb/bbAir/blob/main/README.md "中文")  
 ![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/Cover_Final.jpg?raw=true)
 ## A Display with Patterns and Text Composed of Bubbles ◌ ◯ 〇  O ○ 
 
