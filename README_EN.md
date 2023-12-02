@@ -2,7 +2,7 @@
 ![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/Cover_Final.jpg?raw=true)
 ## A Display with Patterns and Text Composed of Bubbles ◌ ◯ 〇  O ○ 
 
-🔗[PCB Project Files](https://oshwhub.com/corebb/bblaser_pro "PCB Project Files")  
+🔗[PCB Project Files](https://oshwhub.com/corebb/bbair_5v "PCB Project Files")  
 😄[3D Models, Detailed Tutorials](https://afdian.net/a/kuruibb "3D Models, Detailed Tutorials")  
 🐧QQ Group (for communication only): 647186542  
 🐦[Twitter(X)](https://twitter.com/RealCorebb "@RealCorebb") @RealCorebb  
