@@ -2,7 +2,7 @@
 ![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/Cover_Final.jpg?raw=true)
 ## 一个用气泡组成图案、文字的显示器◌ ◯ 〇  O ○ 
 
-🔗[PCB工程文件地址](https://oshwhub.com/corebb/bblaser_pro "PCB工程文件地址")  
+🔗[PCB工程文件地址](https://oshwhub.com/corebb/bbair_5v "PCB工程文件地址")  
 😄[3D模型、更详细的教程](https://afdian.net/a/kuruibb "3D模型、更详细的教程")  
 🐧QQ群（仅供交流）：647186542  
 🐦[Twitter(X)](https://twitter.com/RealCorebb "@RealCorebb") @RealCorebb  
