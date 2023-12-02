@@ -8,7 +8,7 @@
 🐦[Twitter(X)](https://twitter.com/RealCorebb "@RealCorebb") @RealCorebb  
 ▶️Video: [Youtube](https://youtu.be/Ths1KAzwM9w "Youtube")  |  [Bilibili](https://www.bilibili.com/video/BV1og4y1Z7bx/ "Bilibili")  
 
-![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/poster.png?raw=true)  
+![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/poster.jpg?raw=true)  
 
 ## A Fantastic Creation, Love from bbREALM♥
 
