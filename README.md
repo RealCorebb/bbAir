@@ -1,4 +1,4 @@
-# bbAir [English](https://github.com/RealCorebb/bbLaser/blob/main/README_EN.md "English")  
+# bbAir [English](https://github.com/RealCorebb/bbAir/blob/main/README_EN.md "English")  
 ![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/Cover_Final.jpg?raw=true)
 ## 一个用气泡组成图案、文字的显示器◌ ◯ 〇  O ○ 
 
