@@ -6,9 +6,7 @@
 😄[3D模型、更详细的教程](https://afdian.net/a/kuruibb "3D模型、更详细的教程")  
 🐧QQ群（仅供交流）：647186542  
 🐦[Twitter(X)](https://twitter.com/RealCorebb "@RealCorebb") @RealCorebb  
-▶️视频(Video):  
-[Youtube](https://youtu.be/Ths1KAzwM9w "Youtube")  
-[ Bilibili](https://www.bilibili.com/video/BV1og4y1Z7bx/ " Bilibili")  
+▶️视频(Video): [Youtube](https://youtu.be/Ths1KAzwM9w "Youtube")  |  [ Bilibili](https://www.bilibili.com/video/BV1og4y1Z7bx/ " Bilibili")  
 # 禁止搬运到Gitee  
 ![image](https://github.com/RealCorebb/bbAir/blob/main/IMG/poster.png?raw=true)  
 
