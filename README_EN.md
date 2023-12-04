@@ -13,7 +13,6 @@
 ## A Fantastic Creation, Love from bbREALM♥
 
 # Directory Structure:
-### Some files are being organized, please come back later
 **[PCB]:** Schematics and Gerber fabrication files for the PCB (For access to the original project, click on the link above)  
 **[CAD]:** 3D print models (STL format), laser cutting files (DXF format)  
 **[Arduino]:** Code for use with ESP32-S3 in the Arduino IDE
